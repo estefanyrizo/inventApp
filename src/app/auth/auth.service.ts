@@ -13,21 +13,22 @@ export class AuthService {
   private readonly tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  private currentToken: string | null = null; // Almacena el token actual
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    
+
     @Inject(PLATFORM_ID) private platformId: object
   ) {
+    this.currentToken = this.getToken(); // Inicializa el token actual
     if (isPlatformBrowser(this.platformId)) {
-      const token = this.getToken();
-      this.isAuthenticatedSubject.next(!!token);
+      this.startLocalStorageMonitoring();
     }
   }
 
+
   login(user: { username: string; password: string }): Observable<{ token: string }> {
-    
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, user).pipe(
       tap((response) => {
         this.saveAuthData(response.token);
@@ -59,5 +60,59 @@ export class AuthService {
     return token ? JSON.parse(atob(token.split('.')[1])) : null;
   }
 
+  getRole(): string {
+    return this.getDecodedToken()?.role || '';
+  }
 
+  isAuthenticated(): Observable<boolean> {
+    const token = this.getToken();
+    if (!token) {
+      this.isAuthenticatedSubject.next(false);
+      return of(false);
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.post<{ message: string }>(`${this.apiUrl}/verifyToken`, {}, { headers }).pipe(
+      tap(() => this.isAuthenticatedSubject.next(true)),
+      map(() => true),
+      catchError(() => {
+        this.isAuthenticatedSubject.next(false);
+        return of(false);
+      })
+    );
+  }
+
+  isAdmin(): Observable<boolean> {
+    return this.isAuthenticated().pipe(
+      map((isAuthenticated) => {
+        if (isAuthenticated) {
+          const role = this.getRole();
+          return role === 'admin';
+        } else {
+          return false;
+        }
+      })
+    );
+  }
+
+  private startLocalStorageMonitoring(): void {
+    setInterval(() => {
+      const newToken = this.getToken();
+      if (newToken !== this.currentToken) {
+        this.currentToken = newToken;
+        if (!newToken) {
+          this.logout();
+        } else {
+          this.isAuthenticated().subscribe(
+            (isAuthenticated) => {
+              if (!isAuthenticated) {
+                this.logout();
+              }
+            }
+          );
+        }
+      }
+    }, 1000); // Verifica cada segundo (ajusta según sea necesario)
+  }
 }
