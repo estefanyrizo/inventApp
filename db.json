@@ -4,13 +4,13 @@
       "id": 1,
       "username": "admin",
       "password": "admin123",
-      "role": "admin"
+      "role": "user"
     },
     {
       "id": 2,
       "username": "user",
       "password": "user123",
-      "role": "admin"
+      "role": "user"
     },
     {
       "id": 3,
@@ -22,7 +22,7 @@
       "id": 4,
       "username": "estefany",
       "password": "123",
-      "role": "user"
+      "role": "admin"
     },
     {
       "id": 5,
@@ -40,12 +40,141 @@
       "id": 7,
       "username": "estefany123",
       "password": "sdfs",
-      "role": "admin"
+      "role": "user"
     },
     {
       "id": 8,
       "username": "dsf",
       "password": "gfdgf",
+      "role": "admin"
+    },
+    {
+      "id": 9,
+      "username": "estefanu2323",
+      "password": "12323",
+      "role": "admin"
+    },
+    {
+      "id": 10,
+      "username": "asddsf",
+      "password": "dfsdf",
+      "role": "admin"
+    },
+    {
+      "id": 11,
+      "username": "sdfsdgfd",
+      "password": "asdsdf",
+      "role": "admin"
+    },
+    {
+      "id": 12,
+      "username": "user1",
+      "password": "asdasd",
+      "role": "admin"
+    },
+    {
+      "id": 13,
+      "username": "adminq23",
+      "password": "wewr",
+      "role": {
+        "name": "Administrador",
+        "value": "admin"
+      }
+    },
+    {
+      "id": 14,
+      "username": "assdf",
+      "password": "sadsf",
+      "role": "user"
+    },
+    {
+      "id": 15,
+      "username": "adminsdfsdf",
+      "password": "234234",
+      "role": "admin"
+    },
+    {
+      "id": 16,
+      "username": "adminsdfsdfdg",
+      "password": "123234234",
+      "role": "user"
+    },
+    {
+      "id": 17,
+      "username": "asdsdfsdf",
+      "password": "dsfdf",
+      "role": "user"
+    },
+    {
+      "id": 18,
+      "username": "adminsdfsdfdfg",
+      "password": "sdsd",
+      "role": "user"
+    },
+    {
+      "id": 19,
+      "username": "sadsf",
+      "password": "fdsfsdf",
+      "role": "admin"
+    },
+    {
+      "id": 20,
+      "username": "estefanysdfsdf",
+      "password": "wewrewr",
+      "role": "user"
+    },
+    {
+      "id": 21,
+      "username": "xzcxvxcv",
+      "password": "sdfdgf",
+      "role": "user"
+    },
+    {
+      "id": 22,
+      "username": "sadsfasdsf",
+      "password": "ss",
+      "role": "admin"
+    },
+    {
+      "id": 23,
+      "username": "asdsf",
+      "password": "dasddf",
+      "role": "admin"
+    },
+    {
+      "id": 24,
+      "username": "ascsdfsdf",
+      "password": "132234",
+      "role": "user"
+    },
+    {
+      "id": 25,
+      "username": "dsdfsdf",
+      "password": "sdfsdf",
+      "role": "user"
+    },
+    {
+      "id": 26,
+      "username": "asdadsfdf",
+      "password": "343rsfsdf",
+      "role": "user"
+    },
+    {
+      "id": 27,
+      "username": "sdsdfs",
+      "password": "sadsdf",
+      "role": "user"
+    },
+    {
+      "id": 28,
+      "username": "asfsdf",
+      "password": "asdf",
+      "role": "user"
+    },
+    {
+      "id": 29,
+      "username": "dsfsdf",
+      "password": "fsdfsdf",
       "role": "admin"
     }
   ]

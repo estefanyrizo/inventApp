@@ -1,4 +1,5 @@
-@import "primeicons/primeicons.css";
+/* You can add global styles to this file, and also import other style files */
+
 @layer tailwind-base, primeng, tailwind-utilities;
 
 @layer tailwind-base {
@@ -8,4 +9,8 @@
 @layer tailwind-utilities {
   @tailwind components;
   @tailwind utilities;
+}
+
+:root {
+  color-scheme: light !important;
 }

@@ -1,29 +1,43 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { UsuarioService } from '../usuario.service';
 import { User } from '../../interfaces/interfaces';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { FlowbiteService } from '../../flowbite.service';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { NgForm } from '@angular/forms'; // Importa NgForm
 
 @Component({
   standalone: false,
   selector: 'app-usuario',
   templateUrl: './usuario.component.html',
+  providers: [ConfirmationService, MessageService],
 })
 export class UsuarioComponent implements OnInit, OnDestroy {
+
   @Output() onDebounce: EventEmitter<string> = new EventEmitter();
 
+  roles = [
+    { name: 'Administrador', value: 'admin' },
+    { name: 'User', value: 'user' }
+  ];
+  botonDisponible: boolean = false;
   usuarios: User[] = [];
   termino: string = '';
   hayError: boolean = false;
-  mostrarFormulario: boolean = false;
   nuevoUsuario: User = { id: 0, username: '', password: '', role: 'user' };
   errorAgregarUsuario: string | null = null;
+  @ViewChild('editUserModal') editUserModal: ElementRef | undefined;
+  @ViewChild('usuarioForm') usuarioForm: NgForm | undefined;
 
   private debouncer: Subject<string> = new Subject<string>();
   private destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private usuarioService: UsuarioService) { }
+  constructor(private usuarioService: UsuarioService, private flowbiteService: FlowbiteService, private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.flowbiteService.loadFlowbite(flowbite => {
+      console.log('Flowbite loaded', flowbite);
+    });
     this.listar();
 
     this.debouncer
@@ -48,7 +62,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
         this.usuarios = usuarios;
         this.hayError = false;
       },
-      (err) => {
+      () => {
         this.usuarios = [];
         this.hayError = true;
       }
@@ -61,46 +75,48 @@ export class UsuarioComponent implements OnInit, OnDestroy {
         this.usuarios = usuarios;
         this.hayError = false;
       },
-      (err) => {
+      () => {
         this.usuarios = [];
-        this.hayError = true;
       }
     );
   }
 
   agregarUsuario() {
-    this.errorAgregarUsuario = null;
-
-    if (!this.nuevoUsuario.username || !this.nuevoUsuario.password || !this.nuevoUsuario.role) {
-      this.errorAgregarUsuario = 'Todos los campos son obligatorios.';
-      return;
-    }
-
     this.usuarioService.agregarUsuario(this.nuevoUsuario).subscribe(
-      (usuario) => {
-        this.usuarios.push(usuario);
-        this.mostrarFormulario = false;
-        this.nuevoUsuario = {id: 0, username: '', password: '', role: 'user' };
+      () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Usuario agregado correctamente',
+        });
+        this.listar();
+        this.nuevoUsuario = { id: 0, username: '', password: '', role: '' };
       },
-      (err) => {
-        if (err.status === 400 && err.error.message === 'El nombre de usuario ya está en uso') {
-          this.errorAgregarUsuario = 'El nombre de usuario ya está en uso.';
-        } else {
-          this.errorAgregarUsuario = 'Error al agregar el usuario. Inténtalo de nuevo.';
-        }
-        console.error('Error al agregar el usuario:', err);
+      (error) => {
+        this.errorAgregarUsuario = (error.error.message as string) || 'Error al agregar usuario';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorAgregarUsuario,
+        });
       }
     );
   }
 
+
   cambiarRol(usuario: User) {
     const nuevoRol = usuario.role === 'admin' ? 'user' : 'admin';
     this.usuarioService.cambiarRolUsuario(usuario.id, nuevoRol).subscribe(
-      (usuarioActualizado) => {
+      () => {
         const index = this.usuarios.findIndex((u) => u.id === usuario.id);
         if (index !== -1) {
           this.usuarios[index].role = nuevoRol;
         }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Rol actualizado correctamente',
+        });
       },
       (err) => {
         console.error('Error al cambiar el rol:', err);
@@ -119,7 +135,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       (usuarios) => {
         this.usuarios = usuarios;
       },
-      (err) => {
+      () => {
         this.usuarios = [];
       }
     );

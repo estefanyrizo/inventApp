@@ -63,18 +63,19 @@ export class AuthService {
   getRole(): string {
     return this.getDecodedToken()?.role || '';
   }
-
   isAuthenticated(): Observable<boolean> {
     const token = this.getToken();
     if (!token) {
       this.isAuthenticatedSubject.next(false);
       return of(false);
     }
-
+  
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+  
     return this.http.post<{ message: string }>(`${this.apiUrl}/verifyToken`, {}, { headers }).pipe(
-      tap(() => this.isAuthenticatedSubject.next(true)),
+      tap(() => {
+        this.isAuthenticatedSubject.next(true);
+      }),
       map(() => true),
       catchError(() => {
         this.isAuthenticatedSubject.next(false);
@@ -82,7 +83,7 @@ export class AuthService {
       })
     );
   }
-
+  
   isAdmin(): Observable<boolean> {
     return this.isAuthenticated().pipe(
       map((isAuthenticated) => {
