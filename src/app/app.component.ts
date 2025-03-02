@@ -1,15 +1,21 @@
 import { Component } from '@angular/core';
-import { FlowbiteService } from './flowbite.service';
-import { initFlowbite } from 'flowbite';
+import { AuthService } from './auth/auth.service'; // Importa el servicio de autenticación
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
   standalone: false,
-  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'pruebaTecnica';
-  constructor() {}
+  title = 'Mi Aplicación';
 
+  constructor(public authService: AuthService, private router: Router) {}
+
+  // Método para cerrar sesión
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']); // Redirige al login después de cerrar sesión
+  }
 }

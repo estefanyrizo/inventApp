@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +13,8 @@ export class AuthService {
   private readonly tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  private isAdminSubject = new BehaviorSubject<boolean>(false);
+  isAdmin$ = this.isAdminSubject.asObservable();
   private currentToken: string | null = null; // Almacena el token actual
 
   constructor(
@@ -55,23 +57,16 @@ export class AuthService {
     return isPlatformBrowser(this.platformId) ? localStorage.getItem(this.tokenKey) || '' : '';
   }
 
-  getDecodedToken(): any {
-    const token = this.getToken();
-    return token ? JSON.parse(atob(token.split('.')[1])) : null;
-  }
 
-  getRole(): string {
-    return this.getDecodedToken()?.role || '';
-  }
   isAuthenticated(): Observable<boolean> {
     const token = this.getToken();
     if (!token) {
       this.isAuthenticatedSubject.next(false);
       return of(false);
     }
-  
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
     return this.http.post<{ message: string }>(`${this.apiUrl}/verifyToken`, {}, { headers }).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(true);
@@ -83,18 +78,41 @@ export class AuthService {
       })
     );
   }
-  
+
+  getDecodedToken(): any {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+    try {
+      const payload = token.split('.')[1];
+      if (!payload) {
+        return null; // Token no tiene el formato esperado.
+      }
+      return JSON.parse(atob(payload));
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+  getRole(): Observable<string> {
+    const decodedToken = this.getDecodedToken();
+    if (!decodedToken || !decodedToken.role) {
+      return of('');
+    }
+    return of(decodedToken.role);
+  }
+
   isAdmin(): Observable<boolean> {
-    return this.isAuthenticated().pipe(
-      map((isAuthenticated) => {
-        if (isAuthenticated) {
-          const role = this.getRole();
-          return role === 'admin';
-        } else {
-          return false;
-        }
-      })
-    );
+    const decodedToken = this.getDecodedToken();
+    if (!decodedToken || !decodedToken.role) {
+      this.isAdminSubject.next(false);
+      return of(false);
+    }
+    const isAdmin = decodedToken.role === 'admin';
+    this.isAdminSubject.next(isAdmin);
+    return of(isAdmin);
   }
 
   private startLocalStorageMonitoring(): void {

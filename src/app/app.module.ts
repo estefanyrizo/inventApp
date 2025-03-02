@@ -11,6 +11,7 @@ import Tema from './tema';
 
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
+import { CategoriaModule } from './categoria/categoria.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { UsuarioModule } from './usuario/usuario.module';
     BrowserModule,
     AppRoutingModule,
     AuthModule,
-    UsuarioModule
+    UsuarioModule,
+    CategoriaModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),

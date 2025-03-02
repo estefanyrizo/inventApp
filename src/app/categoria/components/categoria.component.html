@@ -1,0 +1,86 @@
+<!-- Botón flotante para mostrar/ocultar el formulario de agregar -->
+<button class="fab-button" (click)="mostrarFormularioAgregar = !mostrarFormularioAgregar">+</button>
+
+<!-- Formulario de agregar -->
+<div *ngIf="mostrarFormularioAgregar" class="formulario-agregar">
+  <h3>Agregar Categoria</h3>
+  <form (ngSubmit)="agregarCategoria()" #categoriaForm="ngForm">
+    <div class="form-group">
+      <label for="nombre">Nombre de la categoria</label>
+      <input
+        type="text"
+        class="form-control"
+        id="nombre"
+        name="nombre"
+        [(ngModel)]="nuevaCategoria.nombre"
+        required
+        placeholder="Ingresa el nombre de la categoria"
+      />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Agregar</button>
+    <button type="button" class="btn btn-secondary" (click)="mostrarFormularioAgregar = false">
+      Cancelar
+    </button>
+  </form>
+</div>
+
+<!-- Formulario de edición -->
+<div *ngIf="mostrarFormularioEditar" class="mt-4">
+  <h3>Editar Categoría</h3>
+  <form (ngSubmit)="editarCategoria(categoriaSeleccionada)">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input
+        type="text"
+        class="form-control"
+        id="nombre"
+        [(ngModel)]="nuevaCategoria.nombre"
+        name="nombre"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">
+      Cancelar
+    </button>
+  </form>
+</div>
+
+<!-- Formulario de búsqueda -->
+<form (ngSubmit)="buscar()" autocomplete="off">
+  <input
+    type="text"
+    name="termino"
+    class="form-control"
+    [(ngModel)]="termino"
+    (input)="teclaPresionada()"
+  />
+  <button type="submit">Buscar</button>
+</form>
+
+<!-- Mensaje de error -->
+<div *ngIf="hayError">No se encontraron categorias con ese nombre.</div>
+<div *ngIf="errorAgregarCategoria">{{ errorAgregarCategoria }}</div>
+
+<!-- Tabla de categorias -->
+<table *ngIf="categorias.length > 0">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nombre</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let categoria of categorias; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ categoria.nombre }}</td>
+      <td>
+        <button class="btn btn-primary" (click)="mostrarFormularioEdicion(categoria)">
+          Editar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

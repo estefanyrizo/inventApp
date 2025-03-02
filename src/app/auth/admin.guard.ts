@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { take, switchMap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +13,17 @@ export class AdminGuard implements CanActivate {
   canActivate(): Observable<boolean> {
     return this.authService.isAdmin().pipe(
       take(1),
-      tap((isAdmin) => {
-        if (!isAdmin) {
+      switchMap((isAdmin) => {
+        if (isAdmin) {
+          return of(true);
+        } else {
           this.router.navigate(['/home']); // Redirige a /home si no es admin
+          return of(false);
         }
+      }),
+      catchError(() => {
+        this.router.navigate(['/home']); // Redirige a /home si hay un error
+        return of(false);
       })
     );
   }

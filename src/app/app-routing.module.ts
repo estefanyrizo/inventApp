@@ -7,6 +7,7 @@ import { HomeComponent } from './home/components/home.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UsuarioComponent } from './usuario/components/usuario.component';
 import { AdminGuard } from './auth/admin.guard';
+import { CategoriaComponent } from './categoria/components/categoria.component';
 
 
 const routes: Routes = [
@@ -14,10 +15,11 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'usuarios', component: UsuarioComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'categorias', component: CategoriaComponent, canActivate: [AuthGuard, AdminGuard] },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {}
