@@ -9,6 +9,7 @@ import { providePrimeNG } from 'primeng/config';
 import Tema from './tema';
 
 import { AuthModule } from './auth/auth.module';
+import { UsuarioModule } from './usuario/components/usuario.module';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AuthModule
+    AuthModule,
+    UsuarioModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),
