@@ -22,7 +22,11 @@
     "@angular/router": "^19.1.0",
     "@angular/ssr": "^19.1.8",
     "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "path": "^0.12.7",
     "rxjs": "~7.8.0",
+    "save": "^2.9.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
@@ -33,12 +37,28 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
+    "dotenv": "^16.4.7",
     "jasmine-core": "~5.5.0",
+    "json-server": "^1.0.0-beta.3",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2"
-  }
+  },
+  "description": "This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.8.",
+  "main": "middleware.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estefanyrizo/inventApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/estefanyrizo/inventApp/issues"
+  },
+  "homepage": "https://github.com/estefanyrizo/inventApp#readme"
 }

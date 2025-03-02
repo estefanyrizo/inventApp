@@ -1,0 +1,46 @@
+{
+    "users": [
+      {
+        "id": 1,
+        "username": "admin",
+        "password": "admin123",
+        "role": "admin"
+      },
+      {
+        "id": 2,
+        "username": "user",
+        "password": "user123",
+        "role": "admin"
+      },
+      {
+        "id": 3,
+        "username": "dsfd",
+        "password": "dfsdf",
+        "role": "user"
+      },
+      {
+        "id": 4,
+        "username": "estefany",
+        "password": "123",
+        "role": "user"
+      },
+      {
+        "id": 5,
+        "username": "admin1234",
+        "password": "123",
+        "role": "user"
+      },
+      {
+        "id": 6,
+        "username": "ADMIn",
+        "password": "123",
+        "role": "user"
+      },
+      {
+        "id": 7,
+        "username": "estefany123",
+        "password": "sdfs",
+        "role": "admin"
+      }
+    ]
+}
