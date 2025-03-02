@@ -1,1 +1,97 @@
 <p>usuario works!</p>
+<!-- Botón flotante para mostrar/ocultar el formulario -->
+<button (click)="mostrarFormulario = !mostrarFormulario">+</button>
+
+<!-- Formulario para agregar usuarios (oculto por defecto) -->
+<div *ngIf="mostrarFormulario" class="formulario-agregar">
+  <h3>Agregar Usuario</h3>
+  <form (ngSubmit)="agregarUsuario()" #usuarioForm="ngForm">
+    <div >
+      <label for="username">Nombre de usuario</label>
+      <input
+        type="text"
+        
+        id="username"
+        name="username"
+        [(ngModel)]="nuevoUsuario.username"
+        required
+        placeholder="Ingresa el nombre de usuario"
+      />
+    </div>
+    <div>
+      <label for="password">Contraseña</label>
+      <input
+        type="password"
+        
+        id="password"
+        name="password"
+        [(ngModel)]="nuevoUsuario.password"
+        required
+        placeholder="Ingresa la contraseña"
+      />
+    </div>
+    <div >
+      <label for="role">Rol</label>
+      <select
+        
+        id="role"
+        name="role"
+        [(ngModel)]="nuevoUsuario.role"
+        required
+      >
+        <option value="admin">Administrador</option>
+        <option value="user">Usuario</option>
+      </select>
+    </div>
+    <button type="submit">Agregar</button>
+    <button type="button" (click)="mostrarFormulario = false">Cancelar</button>
+  </form>
+</div>
+
+<!-- Formulario de búsqueda -->
+<form (ngSubmit)="buscar()" autocomplete="off">
+  <input
+    type="text"
+    name="termino"
+    
+    [(ngModel)]="termino"
+    (input)="teclaPresionada()"
+    placeholder="Buscar usuarios..."
+  />
+  <button type="submit">Buscar</button>
+</form>
+
+<!-- Mensaje de error -->
+<div *ngIf="hayError">
+  No se encontraron usuarios con ese nombre.
+</div>
+
+<!-- Mensaje de error -->
+<div *ngIf="errorAgregarUsuario">
+{{ errorAgregarUsuario }}
+</div>
+
+<!-- Tabla de usuarios -->
+<table *ngIf="usuarios.length > 0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Rol</th>
+        <th>Acciones</th> <!-- Nueva columna para acciones -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of usuarios; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ usuario.username }}</td>
+        <td>{{ usuario.role }}</td>
+        <td>
+          <!-- Botón para cambiar el rol -->
+          <button (click)="cambiarRol(usuario)">
+            {{ usuario.role }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>

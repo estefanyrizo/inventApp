@@ -74,3 +74,77 @@ module.exports = (req, res, next) => {
   }
 
 }
+
+if (url.startsWith('/users') && method === 'GET') {
+  const db = readDb();
+  const users = db.users;
+
+  if (query.username) {
+    const searchName = query.username.toLowerCase();
+    const filteredUsers = users.filter((user) =>
+      user.username.toLowerCase().includes(searchName)
+    );
+
+    if (filteredUsers.length > 0) {
+      return res.status(200).json(filteredUsers);
+    } else {
+      return res.status(404).json({ message: 'No se encontraron usuarios con ese nombre' });
+    }
+  }
+
+  return res.status(200).json(users);
+}
+
+if (url === '/users' && method === 'POST') {
+  const { username, password, role } = body;
+
+  if (!username || !password || !role) {
+    return res.status(400).json({ message: 'Faltan campos obligatorios' });
+  }
+
+  const db = readDb();
+  const users = db.users;
+
+  const usuarioExistente = users.find((u) => u.username.toLowerCase() === username.toLowerCase());
+  if (usuarioExistente) {
+    return res.status(400).json({ message: 'El nombre de usuario ya está en uso' });
+  }
+
+  const nuevoUsuario = {
+    id: users.length + 1,
+    username,
+    password,
+    role,
+  };
+
+  users.push(nuevoUsuario);
+  writeDb(db);
+
+  return res.status(201).json(nuevoUsuario);
+}
+
+if (method === 'PATCH' && url.startsWith('/users/')) {
+  const userId = parseInt(url.split('/')[2], 10);
+
+  if (isNaN(userId)) {
+    return res.status(400).json({ message: 'ID de usuario no válido' });
+  }
+
+  const { role } = body;
+  if (!role || (role !== 'admin' && role !== 'user')) {
+    return res.status(400).json({ message: 'Rol no válido. Debe ser "admin" o "user".' });
+  }
+
+  const db = readDb();
+  const users = db.users;
+
+  const usuario = users.find((u) => u.id === userId);
+  if (!usuario) {
+    return res.status(404).json({ message: `Usuario con ID ${userId} no encontrado` });
+  }
+
+  usuario.role = role;
+  writeDb(db);
+
+  return res.status(200).json(usuario);
+}

@@ -9,7 +9,7 @@ import { providePrimeNG } from 'primeng/config';
 import Tema from './tema';
 
 import { AuthModule } from './auth/auth.module';
-import { UsuarioModule } from './usuario/components/usuario.module';
+import { UsuarioModule } from './usuario/usuario.module';
 
 @NgModule({
   declarations: [
