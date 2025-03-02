@@ -16,6 +16,15 @@ import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './components/login.component';
 
 
+
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { CheckboxModule } from 'primeng/checkbox';
+import { RippleModule } from 'primeng/ripple';
+import { RouterModule } from '@angular/router';
+import { MessageModule } from 'primeng/message';
+
+
 @NgModule({
   declarations: [
     LoginComponent,
@@ -24,6 +33,13 @@ import { LoginComponent } from './components/login.component';
     FormsModule,
     CommonModule,
     HttpClientModule,
+    RouterModule,
+    ButtonModule,
+    InputTextModule, // Import InputTextModule
+    CheckboxModule, // Import CheckboxModule
+    RippleModule,
+    MessageModule,
+
   ],
   exports: [
     LoginComponent,

@@ -13,7 +13,11 @@ export class LoginComponent {
   errorMessage = ''; // Mensaje de error
   isLoading = false; // Estado de carga
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
+  
+  ngOnInit(): void {
+    this.authService.logout();
+  }
 
   onSubmit(form: NgForm) {
     // Verifica si el formulario es válido

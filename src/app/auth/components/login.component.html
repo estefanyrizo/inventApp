@@ -1,35 +1,25 @@
-<div class="login-container">
-    <h2>Iniciar Sesión</h2>
-  
+<!-- <div class="min-h-screen min-w-screen bg-gray-50"> -->
+<div class="flex justify-center items-center h-screen">
+  <div class="surface-card p-4 shadow-md rounded-md w-full sm:w-1/2 lg:w-1/3 bg-white py-8 mx-2 sm:mx-0">
+    <div class="text-center mb-5">
+      <div class="text-900 text-3xl font-medium mb-3">Inicia sesión</div>
+    </div>
+
+    <p-message *ngIf="errorMessage" severity="error" icon="pi pi-times-circle" styleClass="mb-4">{{ errorMessage }}</p-message>
+
+
     <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-      <div class="form-group">
-        <label for="username">Usuario:</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          [(ngModel)]="user.username"
-          required
-          placeholder="Ingresa tu usuario"
-        />
+      <div>
+        <label for="username" class="block text-900 font-medium mb-2" [ngClass]="{ 'text-red-500': errorMessage }">Usuario</label>
+        <input type="text" id="username" name="username" [(ngModel)]="user.username" required
+          placeholder="Ingresa tu usuario" class="w-full mb-3" pInputText [ngClass]="{ 'ng-invalid': errorMessage }"/>
+
+        <label for="password1" class="block text-900 font-medium mb-2" [ngClass]="{ 'text-red-500': errorMessage }">Contraseña</label>
+        <input type="password" id="password" name="password" [(ngModel)]="user.password" required
+          placeholder="Ingresa tu contraseña" class="w-full mb-3" pInputText [ngClass]="{ 'ng-invalid': errorMessage }"/>
+        <button pButton pRipple label="{{ isLoading ? 'Cargando...' : 'Iniciar Sesión' }}" icon="pi pi-user"
+          class="w-full mt-6" type="submit" [disabled]="!loginForm.valid || isLoading"> </button>
       </div>
-  
-      <div class="form-group">
-        <label for="password">Contraseña:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          [(ngModel)]="user.password"
-          required
-          placeholder="Ingresa tu contraseña"
-        />
-      </div>
-  
-      <button type="submit" [disabled]="!loginForm.valid || isLoading">
-        {{ isLoading ? 'Cargando...' : 'Iniciar Sesión' }}
-      </button>
-  
-      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     </form>
   </div>
