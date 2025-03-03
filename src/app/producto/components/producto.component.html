@@ -50,7 +50,7 @@
                 </td>
                 <td class="px-6 py-4">{{ producto.stock }}</td>
                 <td class="px-6 py-4">
-                    {{ categorias[producto.id]?.nombre }}
+                     {{ categorias[producto.id]?.nombre || 'Sin categoría' }}
                 </td>
                 <td class="px-6 py-4">
                     <!-- Botón Editar con el modal target dinámico -->
