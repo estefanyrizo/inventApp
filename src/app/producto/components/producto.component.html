@@ -1,4 +1,4 @@
-<!-- Table component ***************** -->
+
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 bg-white">
     <div class="flex items-center justify-between flex-column md:flex-row flex-wrap mb-4">
         <div>
@@ -50,7 +50,7 @@
                 </td>
                 <td class="px-6 py-4">{{ producto.stock }}</td>
                 <td class="px-6 py-4">
-                    {{ categorias[producto.id].nombre }}
+                    {{ categorias[producto.id]?.nombre }}
                 </td>
                 <td class="px-6 py-4">
                     <!-- Botón Editar con el modal target dinámico -->

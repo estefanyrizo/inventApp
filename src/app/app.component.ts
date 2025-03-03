@@ -16,8 +16,4 @@ export class AppComponent implements AfterViewInit {
     this.flowbiteService.loadFlowbite();
   }
 
-  agregarModal(): void {
-    // Agrega un modal dinámico al DOM
-    this.flowbiteService.reinitializeFlowbite(); // Re-inicializa Flowbite
-  }
 }

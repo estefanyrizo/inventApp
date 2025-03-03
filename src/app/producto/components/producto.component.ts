@@ -6,6 +6,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { NgForm } from '@angular/forms';
 import { CategoriaService } from '../../categoria/categoria.service';
 
+
 @Component({
   selector: 'app-producto',
   standalone: false,
@@ -87,9 +88,14 @@ export class ProductoComponent {
         this.productos = productos;
         this.hayError = false;
       },
-      (err) => {
+      (error) => {
         this.productos = [];
-        this.hayError = true;
+        this.errorBuscar = (error.error.message as string) || 'Error al buscar usuario';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorBuscar,
+        });
       }
     );
   }
@@ -102,7 +108,7 @@ export class ProductoComponent {
       },
       (error) => {
         this.productos = [];
-        this.errorBuscar = (error.error.message as string) || 'Error al agregar usuario';
+        this.errorBuscar = (error.error.message as string) || 'Error al buscar usuario';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
