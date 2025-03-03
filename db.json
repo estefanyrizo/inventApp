@@ -3,215 +3,82 @@
     {
       "id": 1,
       "username": "admin",
-      "password": "admin123",
-      "role": "admin"
+      "password": "password123",
+      "role": "admin",
+      "estado": "activo"
     },
     {
       "id": 2,
-      "username": "user",
-      "password": "user123",
-      "role": "user"
+      "username": "user1",
+      "password": "password456",
+      "role": "admin",
+      "estado": "inactivo"
     },
     {
       "id": 3,
-      "username": "dsfd",
-      "password": "dfsdf",
-      "role": "admin"
+      "username": "user2",
+      "password": "password789",
+      "role": "admin",
+      "estado": "inactivo"
     },
     {
       "id": 4,
       "username": "estefany",
       "password": "123",
-      "role": "user"
-    },
-    {
-      "id": 5,
-      "username": "admin1234",
-      "password": "123",
-      "role": "user"
-    },
-    {
-      "id": 6,
-      "username": "ADMIn",
-      "password": "123",
-      "role": "user"
-    },
-    {
-      "id": 7,
-      "username": "estefany123",
-      "password": "sdfs",
-      "role": "admin"
-    },
-    {
-      "id": 8,
-      "username": "adminsdfsdf",
-      "password": "asffsdf",
-      "role": "user"
-    },
-    {
-      "id": 9,
-      "username": "admindsfsdf",
-      "password": "dsdfsdf",
-      "role": "user"
-    },
-    {
-      "id": 10,
-      "username": "enrique",
-      "password": "1",
-      "role": "user"
-    },
-    {
-      "id": 11,
-      "username": "mary",
-      "password": "1",
-      "role": "user"
-    },
-    {
-      "id": 12,
-      "username": "dfsdf",
-      "password": "fdgffdg",
-      "role": "user"
-    },
-    {
-      "id": 13,
-      "username": "efer",
-      "password": "fsdfd",
-      "role": "user"
+      "role": "user",
+      "estado": "inactivo"
     }
   ],
   "categorias": [
     {
       "id": 1,
-      "nombre": "sdffssf"
+      "nombre": "Electrónicoss"
     },
     {
       "id": 2,
-      "nombre": "ropassd"
+      "nombre": "Ropa"
     },
     {
       "id": 3,
-      "nombre": "Hogar"
+      "nombre": "Alimentos"
     },
     {
       "id": 4,
-      "nombre": "Deportesss"
+      "nombre": "Juguetes"
     },
     {
       "id": 5,
-      "nombre": "Armeria"
-    },
-    {
-      "id": 6,
-      "nombre": "Nueva Categoría"
-    },
-    {
-      "id": 7,
-      "nombre": "Enriqueghghvhv"
-    },
-    {
-      "id": 8,
-      "nombre": "Esdfssdfsfsdfdfdf"
-    },
-    {
-      "id": 9,
-      "nombre": "ropassdsd"
-    },
-    {
-      "id": 10,
-      "nombre": "nueva cat"
-    },
-    {
-      "id": 11,
-      "nombre": "nueva catdddd"
-    },
-    {
-      "id": 12,
-      "nombre": "Enrique"
-    },
-    {
-      "id": 13,
-      "nombre": "denuevocccc"
+      "nombre": "Lola"
     }
   ],
   "productos": [
     {
       "id": 1,
-      "nombre": "Laptop Gamersdfsdf",
-      "descripcion": "Laptop con procesador Intel i7 y 16GB de RAM",
-      "precio": 1500.99,
+      "nombre": "Laptop",
+      "descripcion": "Laptop de alto rendimiento",
+      "precio": 1200,
       "stock": 10,
-      "categoriaId": 2
+      "categoriaId": 1
     },
     {
       "id": 2,
-      "nombre": "Mouse Inalámbrico",
-      "descripcion": "Mouse ergonómico con conexión Bluetooth",
-      "precio": 25.5,
-      "stock": 50,
-      "categoriaId": 3
+      "nombre": "Camiseta",
+      "precio": 25,
+      "categoriaId": 2
     },
     {
       "id": 3,
-      "nombre": "estefanydfsdf",
-      "descripcion": "Teclado RGB con switches rojos",
-      "precio": 80.75,
-      "stock": 20,
+      "nombre": "Manzanas",
+      "precio": 2,
+      "stock": 100,
       "categoriaId": 3
     },
     {
       "id": 4,
-      "nombre": "Monitor 24''",
-      "descripcion": "Monitor Full HD con 144Hz de refresco",
-      "precio": 220,
-      "stock": 15,
-      "categoriaId": 4
-    },
-    {
-      "id": 5,
-      "nombre": "Ensalada",
-      "descripcion": "Monitor Full HD con 144Hz de refresco",
-      "precio": 220,
-      "stock": 15,
-      "categoriaId": 4
-    },
-    {
-      "id": 6,
-      "nombre": "Ensalada",
-      "descripcion": "Monitor Full HD con 144Hz de refresco",
-      "precio": 220,
-      "stock": 15,
-      "categoriaId": 4
-    },
-    {
-      "id": 7,
-      "nombre": "Ensalada",
-      "descripcion": "Monitor Full HD con 144Hz de refresco",
-      "precio": 220,
-      "stock": 15,
-      "categoriaId": 4
-    },
-    {
-      "id": 8,
-      "nombre": "Enrique",
-      "descripcion": "sfsdf",
-      "precio": 3,
-      "stock": 3,
-      "categoriaId": 3
-    },
-    {
-      "id": 9,
-      "nombre": "sddsf",
-      "descripcion": "fg",
-      "precio": 1,
-      "stock": 1,
-      "categoriaId": 1
-    },
-    {
-      "id": 10,
-      "nombre": "ummkmmn",
-      "descripcion": "gis",
-      "precio": 8999.333333333334,
-      "stock": 23,
+      "nombre": "Smartphone",
+      "descripcion": "Último modelo",
+      "precio": 800,
+      "stock": 20,
       "categoriaId": 1
     }
   ]

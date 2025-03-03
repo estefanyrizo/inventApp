@@ -1,86 +1,142 @@
-<!-- Botón flotante para mostrar/ocultar el formulario de agregar -->
-<button class="fab-button" (click)="mostrarFormularioAgregar = !mostrarFormularioAgregar">+</button>
-
-<!-- Formulario de agregar -->
-<div *ngIf="mostrarFormularioAgregar" class="formulario-agregar">
-  <h3>Agregar Categoria</h3>
-  <form (ngSubmit)="agregarCategoria()" #categoriaForm="ngForm">
-    <div class="form-group">
-      <label for="nombre">Nombre de la categoria</label>
-      <input
-        type="text"
-        class="form-control"
-        id="nombre"
-        name="nombre"
-        [(ngModel)]="nuevaCategoria.nombre"
-        required
-        placeholder="Ingresa el nombre de la categoria"
-      />
+<!-- Table component ***************** -->
+<p-toast />
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 bg-white">
+  <div class="flex items-center justify-between flex-column md:flex-row flex-wrap mb-4">
+    <div>
+      <a type="button" data-modal-target="addCategoryModal" data-modal-show="addCategoryModal" data-modal-toggle="addCategoryModal"
+        class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2">Agregar
+        categoria</a>
     </div>
+    <form (ngSubmit)="buscar()" autocomplete="off">
+      <label for="table-search" class="sr-only">Buscar</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+          </svg>
+        </div>
+        <input type="text" id="table-search-users" name="termino"
+          class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Buscar por nombre de categoria" [(ngModel)]="termino" (input)="teclaPresionada()" />
+      </div>
+    </form>
+  </div>
+  <!-- <button data-modal-target="editCategoryModal" data-modal-toggle="editCategoryModal" data-modal-show="editCategoryModal" type="button">Open Modal</button> -->
+  <table class="w-full text-sm text-gray-500 text-center text-center" *ngIf="categorias.length > 0">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+      <tr>
+        <th scope="col" class="px-6 py-">#</th>
+        <th scope="col" class="px-6 py-3">Nombre</th>
+        <th scope="col" class="px-6 py-3">Acciones</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let categoria of categorias; let i = index">
+      <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
+        <td class="px-6 py-4">{{ i + 1 }}</td>
+        <td class="px-6 py-4 font-semibold text-gray-900">
+          {{ categoria.nombre }}
+        </td>
+        <td class="px-6 py-4">
+          <!-- Botón Editar con el modal target dinámico -->
+          <a #dynamicButton type="button" data-modal-target="editCategoryModal" data-modal-toggle="editCategoryModal"
+            (click)="SeleccionarCategoria(categoria)" data-modal-show="editCategoryModal"  
+            class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2">Editar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    <button type="submit" class="btn btn-primary">Agregar</button>
-    <button type="button" class="btn btn-secondary" (click)="mostrarFormularioAgregar = false">
-      Cancelar
-    </button>
-  </form>
-</div>
+  <!-- Add category modal -->
+  <div class="formulario-agregar" id="addCategoryModal" tabindex="-1" aria-hidden="true"
+    class="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-2xl max-h-full">
+      <!-- Modal content -->
+      <form (ngSubmit)="agregarCategoria()" #categoriaForm="ngForm" class="relative bg-white rounded-lg shadow-sm">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Agregar categoria
+          </h3>
+          <button type="button"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+            data-modal-hide="addCategoryModal">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
 
-<!-- Formulario de edición -->
-<div *ngIf="mostrarFormularioEditar" class="mt-4">
-  <h3>Editar Categoría</h3>
-  <form (ngSubmit)="editarCategoria(categoriaSeleccionada)">
-    <div class="form-group">
-      <label for="nombre">Nombre</label>
-      <input
-        type="text"
-        class="form-control"
-        id="nombre"
-        [(ngModel)]="nuevaCategoria.nombre"
-        name="nombre"
-        required
-      />
+        <div class="p-6 space-y-6">
+          <div class="col-span-6 sm:col-span-3">
+            <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900">Nombre de la categoria</label>
+            <input pInputText id="nombre" aria-describedby="nombre-help" [(ngModel)]="nuevaCategoria.nombre"
+              name="nombre" class="w-full" placeholder="Ingresa el nombre de la categoria" required />
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center p-6 space-x-3 rtl:space-x-reverse">
+          <p-toast />
+          <p-confirmdialog />
+          <p-button
+            class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+            type="submit" label="Guardar" />
+          <p-button label="Cancelar" #cerrarModal severity="danger"
+            class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+            data-modal-hide="addCategoryModal" />
+        </div>
+      </form>
     </div>
-    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-    <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">
-      Cancelar
-    </button>
-  </form>
+  </div>
+  <!-- End Add category modal -->
+
+  <!-- Edit category modal -->
+  <div class="formulario-agregar" id="editCategoryModal" tabindex="-1" aria-hidden="true"
+    class="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-2xl max-h-full">
+      <!-- Modal content -->
+      <form (ngSubmit)="editarCategoria(categoriaSeleccionada)" #categoriaForm="ngForm"
+        class="relative bg-white rounded-lg shadow-sm">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Editar categoria
+          </h3>
+          <button type="button"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+            data-modal-hide="editCategoryModal">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <div class="col-span-6 sm:col-span-3">
+            <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900">Nombre de la categoria</label>
+            <input pInputText id="nombre" aria-describedby="nombre-help" [(ngModel)]="categoriaSeleccionada.nombre"
+              name="nombre" class="w-full" placeholder="Ingresa el nombre de la categoria" required />
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center p-6 space-x-3 rtl:space-x-reverse">
+          <p-toast />
+          <p-confirmdialog />
+          <p-button
+            class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+            type="submit" label="Guardar" />
+          <p-button label="Cancelar" #cerrarModal severity="danger"
+            class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+            data-modal-hide="editCategoryModal" />
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- End Edit category modal -->
 </div>
-
-<!-- Formulario de búsqueda -->
-<form (ngSubmit)="buscar()" autocomplete="off">
-  <input
-    type="text"
-    name="termino"
-    class="form-control"
-    [(ngModel)]="termino"
-    (input)="teclaPresionada()"
-  />
-  <button type="submit">Buscar</button>
-</form>
-
-<!-- Mensaje de error -->
-<div *ngIf="hayError">No se encontraron categorias con ese nombre.</div>
-<div *ngIf="errorAgregarCategoria">{{ errorAgregarCategoria }}</div>
-
-<!-- Tabla de categorias -->
-<table *ngIf="categorias.length > 0">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Nombre</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let categoria of categorias; let i = index">
-      <td>{{ i + 1 }}</td>
-      <td>{{ categoria.nombre }}</td>
-      <td>
-        <button class="btn btn-primary" (click)="mostrarFormularioEdicion(categoria)">
-          Editar
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<!-- ******************************* -->

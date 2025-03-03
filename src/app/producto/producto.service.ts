@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl: string = 'http://localhost:3000';
+  // Si se probara la api localmente remplazar por: http://localhost:3000
+  private readonly apiUrl = 'http://dc0ws0ggw0sg8wscskcocg4s.137.184.75.110.sslip.io/';
 
   constructor(private http: HttpClient) { }
 

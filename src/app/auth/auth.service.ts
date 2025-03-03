@@ -10,7 +10,8 @@ import { catchError, map, tap, distinctUntilChanged } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:3000';
+  // Si se probara la api localmente remplazar por: http://localhost:3000
+  private readonly apiUrl = 'http://dc0ws0ggw0sg8wscskcocg4s.137.184.75.110.sslip.io/';
   private readonly tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.checkInitialAuthState());
   private isAdminSubject = new BehaviorSubject<boolean>(this.checkInitialAdminState());
@@ -75,19 +76,24 @@ export class AuthService {
   isAuthenticated(): Observable<boolean> {
     const token = this.getToken();
     if (!token) {
+      this.isAuthenticatedSubject.next(false);
       return of(false);
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.post<{ message: string }>(`${this.apiUrl}/verifyToken`, {}, { headers }).pipe(
-      tap(() => this.updateAuthState()),
+      tap(() => this.isAuthenticatedSubject.next(true)),
       map(() => true),
       catchError(() => {
-        this.updateAuthState();
+        this.isAuthenticatedSubject.next(false);
         return of(false);
       })
     );
+  }
+
+  isActive(): Observable<boolean> {
+    return of(this.getDecodedToken()?.estado?.toLowerCase() === 'activo' || false);
   }
 
   getDecodedToken(): any {
@@ -101,10 +107,6 @@ export class AuthService {
       console.error('Error decoding token:', error);
       return null;
     }
-  }
-
-  getRole(): Observable<string> {
-    return of(this.getDecodedToken()?.role || '');
   }
 
   isAdmin(): Observable<boolean> {

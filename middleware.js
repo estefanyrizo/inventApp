@@ -28,7 +28,7 @@ module.exports = (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      { id: user.id, username: user.username, role: user.role, estado: user.estado },
       SECRET_KEY,
       { expiresIn: '1h' }
     );
@@ -90,7 +90,7 @@ module.exports = (req, res, next) => {
   }
 
   if (url === '/users' && method === 'POST') {
-    const { username, password, role } = body;
+    const { username, password, role, estado } = body;
 
     if (!username || !password || !role) {
       return res.status(400).json({ message: 'Faltan campos obligatorios' });
@@ -109,6 +109,7 @@ module.exports = (req, res, next) => {
       username,
       password,
       role,
+      estado,
     };
 
     users.push(nuevoUsuario);
@@ -124,11 +125,7 @@ module.exports = (req, res, next) => {
       return res.status(400).json({ message: 'ID de usuario no válido' });
     }
 
-    const { role } = body;
-    if (!role || (role !== 'admin' && role !== 'user')) {
-      return res.status(400).json({ message: 'Rol no válido. Debe ser "admin" o "user".' });
-    }
-
+    const { role, estado } = body;
     const db = readDb();
     const users = db.users;
 
@@ -137,7 +134,24 @@ module.exports = (req, res, next) => {
       return res.status(404).json({ message: `Usuario con ID ${userId} no encontrado` });
     }
 
-    usuario.role = role;
+    if (role) {
+      if (role !== 'admin' && role !== 'user') {
+        return res.status(400).json({ message: 'Rol no válido. Debe ser "admin" o "user".' });
+      }
+      usuario.role = role;
+    }
+
+    if (estado) {
+      if (estado !== 'activo' && estado !== 'inactivo') {
+        return res.status(400).json({ message: 'Estado no válido. Debe ser "activo" o "inactivo".' });
+      }
+      usuario.estado = estado;
+    }
+
+    if (!role && !estado) {
+      return res.status(400).json({ message: 'Debe proporcionar "role" o "estado" para actualizar.' })
+    }
+
     writeDb(db);
 
     return res.status(200).json(usuario);
@@ -257,7 +271,7 @@ module.exports = (req, res, next) => {
     const db = readDb();
     const productos = db.productos;
 
-    const productoExistente = productos.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase(), );
+    const productoExistente = productos.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase(),);
 
     if (productoExistente) {
       return res.status(400).json({ message: 'El producto ya existe' });
@@ -272,7 +286,7 @@ module.exports = (req, res, next) => {
     writeDb(db);
 
     return res.status(201).json(nuevoProducto);
-  } 
+  }
   if (method === 'PATCH' && url.startsWith('/productos/')) {
     const productoId = parseInt(url.split('/')[2], 10);
 
@@ -294,14 +308,14 @@ module.exports = (req, res, next) => {
     }
 
     const nombreExistente = productos.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase() && c.id !== productoId);
-    if (nombreExistente) { 
+    if (nombreExistente) {
       return res.status(400).json({ message: 'El nombre del producto ya está en uso' });
     }
 
     productos[productoIndex].nombre = nombre;
     writeDb(db);
 
-    return res.status(200).json({mensaje : 'Producto Actualizado'});
+    return res.status(200).json({ mensaje: 'Producto Actualizado' });
   }
-  
+
 };

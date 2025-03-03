@@ -7,7 +7,8 @@ import { User } from '../interfaces/interfaces';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl: string = 'http://localhost:3000';
+  // Si se probara la api localmente remplazar por: http://localhost:3000
+  private readonly apiUrl = 'http://dc0ws0ggw0sg8wscskcocg4s.137.184.75.110.sslip.io/';
 
   constructor(private http: HttpClient) { }
 
@@ -27,5 +28,8 @@ export class UsuarioService {
 
   cambiarRolUsuario(id: number, nuevoRol: string): Observable<User> {
     return this.http.patch<User>(`${this.apiUrl}/users/${id}`, { role: nuevoRol });
+  }
+  cambiarEstadoUsuario(id: number, nuevoEstado: string): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/users/${id}`, { estado: nuevoEstado });
   }
 }

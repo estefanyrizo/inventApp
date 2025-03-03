@@ -1,21 +1,28 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Categoria } from '../../interfaces/interfaces';
 import { CategoriaService } from '../categoria.service';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { FlowbiteService } from '../../flowbite.service';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { NgForm } from '@angular/forms';
+
 
 @Component({
   selector: 'app-categoria',
   standalone: false,
   templateUrl: './categoria.component.html',
-  styles: ``
+  styles: ``,
+  providers: [ConfirmationService, MessageService],
 })
-export class CategoriaComponent {
+export class CategoriaComponent implements AfterViewInit {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter(); // Emite el término de búsqueda con debounce
+  @ViewChildren('dynamicButton') dynamicButtons!: QueryList<ElementRef>;
 
   categorias: Categoria[] = [];
   hayError: boolean = false;
   termino: string = '';
   errorAgregarCategoria: string | null = '';
+  errorBuscar: string | null = null;
   nuevaCategoria: Categoria = { id: 0, nombre: '' };
   mostrarFormularioEditar: boolean = false;
   mostrarFormularioAgregar: boolean = false;
@@ -24,7 +31,16 @@ export class CategoriaComponent {
   private debouncer: Subject<string> = new Subject<string>(); // Subject para manejar el debounce
   private destroy$: Subject<void> = new Subject<void>(); // Subject para manejar la destrucción del componente
 
-  constructor(private categoriaService: CategoriaService) { }
+  constructor(private categoriaService: CategoriaService, private flowbiteService: FlowbiteService, private messageService: MessageService) { }
+
+  ngAfterViewInit(): void {
+    this.flowbiteService.loadFlowbite();
+    this.dynamicButtons.changes.subscribe(() => {
+      setTimeout(() => {
+        this.flowbiteService.loadFlowbite();
+      }, 100);
+    });
+  }
 
   ngOnInit(): void {
     this.listar(); // Llama al método listar al inicializar el componente
@@ -66,11 +82,15 @@ export class CategoriaComponent {
     this.categoriaService.buscarCategoria(this.termino).subscribe(
       (categorias) => {
         this.categorias = categorias;
-        this.hayError = false;
       },
-      (err) => {
+      (error) => {
         this.categorias = [];
-        this.hayError = true;
+        this.errorBuscar = (error.error.message as string) || 'Error al agregar usuario';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorBuscar,
+        });
       }
     );
   }
@@ -95,16 +115,20 @@ export class CategoriaComponent {
     this.categoriaService.agregarCategoria(this.nuevaCategoria).subscribe(
       (categoria) => {
         this.categorias.push(categoria); // Agrega el nuevo usuario a la lista
-        this.mostrarFormularioAgregar = false; // Oculta el formulario
-        this.nuevaCategoria = { id: 0, nombre: '' }; // Reinicia el formulario
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Categoria agregada correctamente',
+        });
+        this.cerrarModal('addCategoryModal');
       },
-      (err) => {
-        // Maneja los errores del servidor
-        if (err.status === 400 && err.error.message === 'El nombre de la categoria ya está en la lista') {
-          this.errorAgregarCategoria = 'El nombre de la categoria ya está en la lista';
-        } else {
-          this.errorAgregarCategoria = 'Error al agregar el usuario. Inténtalo de nuevo.';
-        }
+      (error) => {
+        this.errorAgregarCategoria = (error.error.message as string) || 'Error al agregar categoria';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorAgregarCategoria,
+        });
       }
     );
   }
@@ -126,46 +150,53 @@ export class CategoriaComponent {
     );
   }
 
-  // Muestra el formulario de edición y llena los datos
-  mostrarFormularioEdicion(categoria: Categoria): void {
-    this.mostrarFormularioEditar = true; // Muestra el formulario de editar
-    this.mostrarFormularioAgregar = false; // Oculta el formulario de agregar
-    this.categoriaSeleccionada = categoria;
-    this.nuevaCategoria = { ...categoria }; // Copia los datos de la categoría seleccionada
+  SeleccionarCategoria(categoria: any) {
+    this.categoriaSeleccionada = { ...categoria }; // Crea una copia para evitar la mutación directa
   }
 
-  // Cancela la edición y oculta el formulario
-  cancelarEdicion(): void {
-    this.mostrarFormularioEditar = false;
-    this.categoriaSeleccionada = { id: 0, nombre: '' };
-    this.nuevaCategoria = { id: 0, nombre: '' }; // Reinicia el formulario
-    this.errorAgregarCategoria = null; // Limpia el mensaje de error
+  abrirModal(modalId: string) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
   }
 
+  cerrarModal(modalId: string) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
   // Envía los cambios al servidor
   editarCategoria(categoria: Categoria): void {
     this.errorAgregarCategoria = null;
 
     // Validación de campos obligatorios
-    if (!this.nuevaCategoria.nombre) {
+    if (!this.categoriaSeleccionada.nombre) {
       this.errorAgregarCategoria = 'Todos los campos son obligatorios.';
       return;
     }
 
-    this.categoriaService.editarCategoria(categoria.id, this.nuevaCategoria).subscribe(
-      (categoriaActualizado) => {
+    this.categoriaService.editarCategoria(categoria.id, this.categoriaSeleccionada).subscribe(
+      () => {
         // Actualiza la categoría en la lista
         const index = this.categorias.findIndex((c) => c.id === categoria.id);
         if (index !== -1) {
           this.categorias[index].nombre = this.nuevaCategoria.nombre;
         }
-        this.cancelarEdicion(); // Oculta el formulario después de guardar
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Categoria actualizada correctamente',
+        });
+        this.listar();
+        this.cerrarModal('editCategoryModal');
       },
       (err) => {
-
-        this.errorAgregarCategoria = 'El nombre de la categoría ya está en uso';
+        console.error('Error al actualizar', err);
       }
     );
+
   }
 
 }

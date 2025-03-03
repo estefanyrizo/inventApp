@@ -1,20 +1,28 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { Producto } from '../../interfaces/interfaces';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { Component, EventEmitter, Output, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Categoria, Producto } from '../../interfaces/interfaces';
 import { ProductoService } from '../producto.service';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { FlowbiteService } from '../../flowbite.service';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { NgForm } from '@angular/forms';
+import { CategoriaService } from '../../categoria/categoria.service';
 
 @Component({
   selector: 'app-producto',
   standalone: false,
   templateUrl: './producto.component.html',
+  providers: [ConfirmationService, MessageService],
 })
 
 export class ProductoComponent {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter(); // Emite el término de búsqueda con debounce
+  @ViewChildren('dynamicButton') dynamicButtons!: QueryList<ElementRef>;
   productos: Producto[] = [];
+  categorias: Categoria[] = [];
   hayError: boolean = false;
   termino: string = '';
   errorAgregarProducto: string | null = '';
+  errorBuscar: string | null = null;
   nuevoProducto: Producto = {
     id: 0,
     nombre: '',
@@ -37,11 +45,20 @@ export class ProductoComponent {
   private debouncer: Subject<string> = new Subject<string>(); // Subject para manejar el debounce
   private destroy$: Subject<void> = new Subject<void>(); // Subject para manejar la destrucción del componente
 
-  constructor(private productoService: ProductoService) { }
+  constructor(private categoriaService: CategoriaService, private productoService: ProductoService, private flowbiteService: FlowbiteService, private messageService: MessageService) { }
+
+  ngAfterViewInit(): void {
+    this.flowbiteService.loadFlowbite();
+    this.dynamicButtons.changes.subscribe(() => {
+      setTimeout(() => {
+        this.flowbiteService.loadFlowbite();
+      }, 100);
+    });
+  }
 
   ngOnInit(): void {
+    this.listarCategorias();
     this.listar(); // Llama al método listar al inicializar el componente
-
     // Configura el debounce
     this.debouncer
       .pipe(
@@ -59,6 +76,19 @@ export class ProductoComponent {
     // Limpia las suscripciones cuando el componente se destruye
     this.destroy$.next();
     this.destroy$.complete();
+  }
+  // Método para obtener todos los categorias
+  listarCategorias() {
+    this.categoriaService.getCategorias().subscribe(
+      (categorias) => {
+        this.categorias = categorias;
+        this.hayError = false;
+      },
+      (err) => {
+        this.categorias = [];
+        this.hayError = true;
+      }
+    );
   }
 
   // Método para obtener todos los productos
@@ -80,11 +110,15 @@ export class ProductoComponent {
     this.productoService.buscarProducto(this.termino).subscribe(
       (productos) => {
         this.productos = productos;
-        this.hayError = false;
       },
-      (err) => {
+      (error) => {
         this.productos = [];
-        this.hayError = true;
+        this.errorBuscar = (error.error.message as string) || 'Error al agregar usuario';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorBuscar,
+        });
       }
     );
   }
@@ -113,35 +147,58 @@ export class ProductoComponent {
     // Reinicia el mensaje de error
     this.errorAgregarProducto = null;
 
-    if (!this.nuevoProducto.nombre && !this.nuevoProducto.precio && !this.nuevoProducto.stock && !this.nuevoProducto.categoriaId ) {
-      this.errorAgregarProducto = 'Campos obligatorios';
+    // Validación de campos obligatorios
+    if (!this.nuevoProducto.nombre || !this.nuevoProducto.precio || !this.nuevoProducto.stock || !this.nuevoProducto.categoriaId) {
+      this.errorAgregarProducto = 'Campos requerodos';
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: this.errorAgregarProducto,
+      });
       return;
     }
+
 
     // Llama al servicio para agregar el usuario
     this.productoService.agregarProducto(this.nuevoProducto).subscribe(
       (producto) => {
         this.productos.push(producto); // Agrega el nuevo usuario a la lista
-        this.mostrarFormularioAgregar = false; // Oculta el formulario
-        this.nuevoProducto = {
-          id: 0,
-          nombre: '',
-          descripcion: '',
-          precio: 0,
-          stock: 0,
-          categoriaId: 0
-        }; // Reinicia el formulario
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Categoria agregada correctamente',
+        });
+        this.cerrarModal('addProductoModal');
       },
-      (err) => {
-        // Maneja los errores del servidor
-        if (err.status === 400 && err.error.message === 'El producto ya existe') {
-          this.errorAgregarProducto = 'El producto ya existe';
-        } else {
-          this.errorAgregarProducto = 'Error al agregar el usuario. Inténtalo de nuevo.';
-        }
+      (error) => {
+        this.errorAgregarProducto = (error.error.message as string) || 'Error al agregar producto';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorAgregarProducto,
+        });
       }
     );
   }
+
+  seleccionarProducto(categoria: any) {
+    this.productoSeleccionado = { ...categoria }; // Crea una copia para evitar la mutación directa
+  }
+
+  abrirModal(modalId: string) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+  cerrarModal(modalId: string) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+
   // Muestra el formulario de edición y llena los datos
   mostrarFormularioEdicion(producto: Producto): void {
     this.mostrarFormularioEditar = true; // Muestra el formulario de editar
@@ -177,29 +234,45 @@ export class ProductoComponent {
     this.errorAgregarProducto = null;
 
     // Validación de campos obligatorios
-    if (!this.nuevoProducto.nombre && !this.nuevoProducto.precio && !this.nuevoProducto.stock && !this.nuevoProducto.categoriaId ) {
-      this.errorAgregarProducto = 'Campos obligatorios';
+    if (!producto.nombre || !producto.precio || !producto.stock || !producto.categoriaId) {
+      this.errorAgregarProducto = 'Campos requerodos';
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: this.errorAgregarProducto,
+      });
       return;
     }
 
-    this.productoService.editarProducto(producto.id, this.nuevoProducto).subscribe(
-      (productoActualizado) => {
+    this.productoService.editarProducto(producto.id, producto).subscribe(
+      () => {
         // Actualiza la categoría en la lista
         const index = this.productos.findIndex((c) => c.id === producto.id);
         if (index !== -1) {
-          this.productos[index].nombre = this.nuevoProducto.nombre;
-          this.productos[index].precio = this.nuevoProducto.precio;
-          this.productos[index].stock = this.nuevoProducto.stock;
-          this.productos[index].categoriaId = this.nuevoProducto.categoriaId;
-          if(this.productoSeleccionado.descripcion){
-            this.productos[index].descripcion = this.nuevoProducto.descripcion;
+          this.productos[index].nombre = this.productoSeleccionado.nombre;
+          this.productos[index].precio = this.productoSeleccionado.precio;
+          this.productos[index].categoriaId = this.productoSeleccionado.categoriaId;
+          if(this.productoSeleccionado.stock){
+          this.productos[index].stock = this.productoSeleccionado.stock;
           }
+          if(this.productoSeleccionado.descripcion){
+            this.productos[index].descripcion = this.productoSeleccionado.descripcion;
+            }
         }
-        this.cancelarEdicion(); // Oculta el formulario después de guardar
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Categoria actualizada correctamente',
+        });
+        this.cerrarModal('editproductoModal')
       },
-      (err) => {
-
-        this.errorAgregarProducto = 'El nombre del producto ya está en uso';
+      (error) => {
+        this.errorAgregarProducto = (error.error.message as string) || 'Error al agregar producto';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorAgregarProducto,
+        });
       }
     );
   }

@@ -24,25 +24,41 @@ export class LoginComponent {
       this.errorMessage = 'Por favor, completa todos los campos.';
       return;
     }
-
+  
     this.isLoading = true;
     this.errorMessage = '';
-
+  
     this.authService.login(this.user).subscribe({
       next: (res) => {
         const token = res?.token;
+  
         if (token) {
-          // Guarda el token en el localStorage
-          this.authService.saveAuthData(token);
-          // Limpia el formulario
-          form.resetForm();
-          this.router.navigate(['']);
+          // Llama a isActive para verificar si el usuario está activo
+          this.authService.isActive().subscribe({
+            next: (isActive) => {
+              if (!isActive) {
+                this.errorMessage = 'Tu cuenta está inactiva. Contacta al administrador.';
+                this.isLoading = false;
+                return;
+              }
+  
+              // Si está activo, guarda el token y navega
+              this.authService.saveAuthData(token);
+              form.resetForm();
+              this.router.navigate(['']);
+            },
+            error: () => {
+              this.errorMessage = 'Error al verificar el estado de la cuenta.';
+              this.isLoading = false;
+            }
+          });
         } else {
           this.errorMessage = 'Error en la respuesta del servidor.';
+          this.isLoading = false;
         }
       },
-      error: () => {
-        this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
+      error: (error) => {
+        this.errorMessage = error.error?.message || 'Error al iniciar sesión.';
         this.isLoading = false;
       },
       complete: () => {
@@ -50,4 +66,6 @@ export class LoginComponent {
       },
     });
   }
+  
+  
 }

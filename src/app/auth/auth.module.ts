@@ -20,6 +20,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { RippleModule } from 'primeng/ripple';
 import { RouterModule } from '@angular/router';
 import { MessageModule } from 'primeng/message';
+import { AdminGuard } from './admin.guard';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { MessageModule } from 'primeng/message';
   providers: [
     AuthService,
     AuthGuard,
+    AdminGuard,
   ]
 })
 export class AuthModule { }

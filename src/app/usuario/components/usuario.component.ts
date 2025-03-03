@@ -4,7 +4,7 @@ import { User } from '../../interfaces/interfaces';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { FlowbiteService } from '../../flowbite.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { NgForm } from '@angular/forms'; // Importa NgForm
+import { NgForm } from '@angular/forms';
 
 @Component({
   standalone: false,
@@ -24,7 +24,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   usuarios: User[] = [];
   termino: string = '';
   hayError: boolean = false;
-  nuevoUsuario: User = { id: 0, username: '', password: '', role: 'user' };
+  nuevoUsuario: User = { id: 0, username: '', password: '', role: 'user', estado: 'inactivo' };
   errorAgregarUsuario: string | null = null;
   errorBuscar: string | null = null;
   @ViewChild('editUserModal') editUserModal: ElementRef | undefined;
@@ -70,6 +70,13 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     );
   }
 
+  cerrarModal(modalId: string) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
   buscar() {
     this.usuarioService.buscarUsuario(this.termino).subscribe(
       (usuarios) => {
@@ -89,13 +96,14 @@ export class UsuarioComponent implements OnInit, OnDestroy {
 
   agregarUsuario() {
     this.usuarioService.agregarUsuario(this.nuevoUsuario).subscribe(
-      () => {
+      (usuario) => {
+        this.usuarios.push(usuario);
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
           detail: 'Usuario agregado correctamente',
         });
-
+        this.cerrarModal('editUserModal');
       },
       (error) => {
         this.errorAgregarUsuario = (error.error.message as string) || 'Error al agregar usuario';
@@ -127,6 +135,32 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  cambiarEstado(usuario: User) {
+    const nuevoEstado = usuario.estado === 'activo' ? 'inactivo' : 'activo';
+    this.usuarioService.cambiarEstadoUsuario(usuario.id, nuevoEstado).subscribe(
+      () => {
+        const index = this.usuarios.findIndex((u) => u.id === usuario.id);
+        if (index !== -1) {
+          this.usuarios[index].estado = nuevoEstado;
+        }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Estado actualizado correctamente',
+        });
+      },
+      (err) => {
+        console.error('Error al cambiar el estado:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al cambiar el estado',
+        });
+      }
+    );
+  }
+
 
   teclaPresionada() {
     this.debouncer.next(this.termino);

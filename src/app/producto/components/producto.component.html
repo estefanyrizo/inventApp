@@ -1,128 +1,213 @@
-<!-- Botón flotante para mostrar/ocultar el formulario de agregar -->
-<button class="fab-button" (click)="mostrarFormularioAgregar = !mostrarFormularioAgregar">+</button>
-
-<!-- Formulario de agregar -->
-<div *ngIf="mostrarFormularioAgregar" class="formulario-agregar">
-    <h3>Agregar Producto</h3>
-    <form (ngSubmit)="agregarProducto()" #productoForm="ngForm">
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nuevoProducto.nombre"
-                required />
+<!-- Table component ***************** -->
+<p-toast />
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 bg-white">
+    <div class="flex items-center justify-between flex-column md:flex-row flex-wrap mb-4">
+        <div>
+            <a type="button" data-modal-target="addProductoModal" data-modal-show="addProductoModal"
+                data-modal-toggle="addProductoModal"
+                class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2">Agregar
+                producto</a>
         </div>
+        <form (ngSubmit)="buscar()" autocomplete="off">
+            <label for="table-search" class="sr-only">Buscar</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                    </svg>
+                </div>
+                <input type="text" id="table-search-users" name="termino"
+                    class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Buscar por nombre de producto" [(ngModel)]="termino" (input)="teclaPresionada()" />
+            </div>
+        </form>
+    </div>
+    <!-- <button data-modal-target="editproductoModal" data-modal-toggle="editproductoModal" data-modal-show="editproductoModal" type="button">Open Modal</button> -->
+    <table class="w-full text-sm text-gray-500 text-center text-center" *ngIf="productos.length > 0">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-">#</th>
+                <th scope="col" class="px-6 py-3">Nombre</th>
+                <th scope="col" class="px-6 py-3">Descripci&oacute;n</th>
+                <th scope="col" class="px-6 py-">Precio</th>
+                <th scope="col" class="px-6 py-3">Stock</th>
+                <th scope="col" class="px-6 py-3">Categoria</th>
+                <th scope="col" class="px-6 py-3">Acciones</th>
+            </tr>
+        </thead>
+        <tbody *ngFor="let producto of productos; let i = index">
+            <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
+                <td class="px-6 py-4">{{ i + 1 }}</td>
+                <td class="px-6 py-4">
+                    {{ producto.nombre }}
+                </td>
+                <td class="px-6 py-4">
+                    {{ producto.descripcion }}
+                </td>
+                <td class="px-6 py-4">
+                    {{ producto.precio }}
+                </td>
+                <td class="px-6 py-4">{{ producto.stock }}</td>
+                <td class="px-6 py-4">
+                    {{ categorias[producto.id].nombre }}
+                </td>
+                <td class="px-6 py-4">
+                    <!-- Botón Editar con el modal target dinámico -->
+                    <a #dynamicButton type="button" data-modal-target="editproductoModal"
+                        data-modal-toggle="editproductoModal" (click)="seleccionarProducto(producto)"
+                        data-modal-show="editproductoModal"
+                        class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2">Editar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-        <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion" name="descripcion"
-                [(ngModel)]="nuevoProducto.descripcion"></textarea>
+    <!-- Add producto modal -->
+    <div class="formulario-agregar" id="addProductoModal" tabindex="-1" aria-hidden="true"
+        class="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <form (ngSubmit)="agregarProducto()" #productoForm="ngForm" class="relative bg-white rounded-lg shadow-sm">
+                <!-- Modal header -->
+                <div class="flex items-start justify-between p-4 border-b rounded-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900">
+                        Agregar producto
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                        data-modal-hide="addProductoModal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-6 gap-6">
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900">Nombre del
+                                producto</label>
+                            <input pInputText id="nombre" aria-describedby="nombre-help"
+                                [(ngModel)]="nuevoProducto.nombre" name="nombre" class="w-full" required />
+                        </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="number" class="block mb-2 text-sm font-medium text-gray-900">Precio</label>
+                            <p-inputnumber id="number" aria-describedby="number-help" [(ngModel)]="nuevoProducto.precio"
+                                name="number" class="w-full" required />
+                        </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="number" class="block mb-2 text-sm font-medium text-gray-900">Stock</label>
+                            <p-inputnumber id="stock" aria-describedby="stock-help" [(ngModel)]="nuevoProducto.stock"
+                                name="stock" class="w-full" required />
+                        </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="categoria" class="block mb-2 text-sm font-medium text-gray-900"
+                                >Categoria</label>
+                            <p-dropdown [options]="categorias" [(ngModel)]="nuevoProducto.categoriaId" name="categoria"
+                                optionLabel="nombre" optionValue="id"  placeholder="Selecciona una categoria" class="w-full"
+                            ></p-dropdown>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <label for="text-tarea"
+                                class="block mb-2 text-sm font-medium text-gray-900">Descripcion</label>
+                            <input pInputText id="descripcion" aria-describedby="descripcion-help"
+                                [(ngModel)]="nuevoProducto.descripcion" name="descripcion" class="w-full" />
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-6 space-x-3 rtl:space-x-reverse">
+                    <p-toast />
+                    <p-confirmdialog />
+                    <p-button
+                        class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+                        type="submit" label="Guardar" />
+                    <p-button label="Cancelar" #cerrarModal severity="danger"
+                        class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+                        data-modal-hide="addProductoModal" />
+                </div>
+            </form>
         </div>
+    </div>
+    <!-- End Add producto modal -->
 
-        <div class="mb-3">
-            <label for="precio" class="form-label">Precio</label>
-            <input type="number" class="form-control" id="precio" name="precio" [(ngModel)]="nuevoProducto.precio"
-                required />
+    <!-- Edit producto modal -->
+    <div class="formulario-agregar" id="editproductoModal" tabindex="-1" aria-hidden="true"
+        class="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <form (ngSubmit)="editarProducto(productoSeleccionado)" #productoForm="ngForm"
+                class="relative bg-white rounded-lg shadow-sm">
+                <!-- Modal header -->
+                <div class="flex items-start justify-between p-4 border-b rounded-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900">
+                        Editar producto
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                        data-modal-hide="editproductoModal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-6 gap-6">
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900">Nombre del
+                                producto</label>
+                            <input pInputText id="nombre" aria-describedby="nombre-help"
+                                [(ngModel)]="productoSeleccionado.nombre" name="nombre" class="w-full" required />
+                        </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="number" class="block mb-2 text-sm font-medium text-gray-900">Precio</label>
+                            <p-inputnumber id="number" aria-describedby="number-help" [(ngModel)]="productoSeleccionado.precio"
+                                name="number" class="w-full" required />
+                        </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="number" class="block mb-2 text-sm font-medium text-gray-900">Stock</label>
+                            <p-inputnumber id="stock" aria-describedby="stock-help" [(ngModel)]="productoSeleccionado.stock"
+                                name="stock" class="w-full" required />
+                        </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <label for="categoria" class="block mb-2 text-sm font-medium text-gray-900"
+                                >Categoria</label>
+                            <p-dropdown [options]="categorias" [(ngModel)]="productoSeleccionado.categoriaId" name="categoria"
+                                optionLabel="nombre" optionValue="id" placeholder="Selecciona una categoria" class="w-full"
+                                ></p-dropdown>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <label for="text-tarea"
+                                class="block mb-2 text-sm font-medium text-gray-900">Descripcion</label>
+                            <input pInputText id="descripcion" aria-describedby="descripcion-help"
+                                [(ngModel)]="productoSeleccionado.descripcion" name="descripcion" class="w-full" />
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-6 space-x-3 rtl:space-x-reverse">
+                    <p-toast />
+                    <p-confirmdialog />
+                    <p-button
+                        class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+                        type="submit" label="Guardar" />
+                    <p-button label="Cancelar" #cerrarModal severity="danger"
+                        class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
+                        data-modal-hide="editproductoModal" />
+                </div>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="stock" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock" name="stock" [(ngModel)]="nuevoProducto.stock"
-                required />
-        </div>
-
-        <div class="mb-3">
-            <label for="categoriaId" class="form-label">Categoría</label>
-            <input type="number" class="form-control" id="categoriaId" name="categoriaId"
-                [(ngModel)]="nuevoProducto.categoriaId" required />
-        </div>
-
-        <button type="submit">Agregar</button>
-        <button type="button" (click)="mostrarFormularioAgregar = false">
-            Cancelar
-        </button>
-    </form>
+    </div>
+    <!-- End Edit producto modal -->
 </div>
-
-<!-- Formulario de edición -->
-<div *ngIf="mostrarFormularioEditar" class="mt-4">
-    <h3>Editar Producto</h3>
-    <form (ngSubmit)="editarProducto(productoSeleccionado)">
-      <div class="form-group">
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nuevoProducto.nombre"
-                required />
-        </div>
-
-        <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion" name="descripcion"
-                [(ngModel)]="nuevoProducto.descripcion"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="precio" class="form-label">Precio</label>
-            <input type="number" class="form-control" id="precio" name="precio" [(ngModel)]="nuevoProducto.precio"
-                required />
-        </div>
-
-        <div class="mb-3">
-            <label for="stock" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock" name="stock" [(ngModel)]="nuevoProducto.stock"
-                required />
-        </div>
-
-        <div class="mb-3">
-            <label for="categoriaId" class="form-label">Categoría</label>
-            <input type="number" class="form-control" id="categoriaId" name="categoriaId"
-                [(ngModel)]="nuevoProducto.categoriaId" required />
-        </div>
-      </div>
-      <button type="submit" class="btn btn-success">Guardar Cambios</button>
-      <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">
-        Cancelar
-      </button>
-    </form>
-  </div>
-
-
-<div *ngIf="errorAgregarProducto">{{ errorAgregarProducto }}</div>
-
-<!-- Formulario de búsqueda -->
-<form (ngSubmit)="buscar()" autocomplete="off">
-    <input type="text" name="termino" class="form-control" [(ngModel)]="termino" (input)="teclaPresionada()" />
-    <button type="submit">Buscar</button>
-</form>
-
-<!-- Mensaje de error -->
-<div *ngIf="hayError">No se encontraron productos con ese nombre.</div>
-
-
-<!-- Tabla de productos -->
-<table *ngIf="productos.length > 0">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Descripcion</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Categoria</th>
-            <th>Accion</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let producto of productos; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ producto.nombre }}</td>
-            <td>{{producto.descripcion}}</td>
-            <td>{{producto.precio}}</td>
-            <td>{{producto.stock}}</td>
-            <td>{{producto.categoriaId}}</td>
-            <td>
-                <button class="btn btn-primary" (click)="mostrarFormularioEdicion(producto)">
-                    Editar
-                </button>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<!-- ******************************* -->
