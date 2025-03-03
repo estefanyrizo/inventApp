@@ -1,19 +1,53 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { initFlowbite } from 'flowbite';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FlowbiteService {
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  private flowbiteInitialized = false;
+  private observer: MutationObserver | null = null;
 
-  loadFlowbite(callback?: (flowbite: any) => void): void {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: object,
+    private ngZone: NgZone
+  ) {}
+
+  loadFlowbite(): void {
+    if (isPlatformBrowser(this.platformId) && !this.flowbiteInitialized) {
+      this.ngZone.runOutsideAngular(() => {
+        initFlowbite();
+        this.flowbiteInitialized = true;
+        this.setupMutationObserver();
+      });
+    }
+  }
+
+  private setupMutationObserver(): void {
     if (isPlatformBrowser(this.platformId)) {
-      initFlowbite();
-      if (callback) {
-        callback(initFlowbite);
-      }
+      this.observer = new MutationObserver(() => {
+        this.reinitializeFlowbite();
+      });
+
+      this.observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    }
+  }
+
+  reinitializeFlowbite(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.ngZone.runOutsideAngular(() => {
+        initFlowbite();
+      });
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
     }
   }
 }

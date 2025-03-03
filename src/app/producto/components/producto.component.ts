@@ -2,7 +2,6 @@ import { Component, EventEmitter, Output, AfterViewInit, ViewChildren, QueryList
 import { Categoria, Producto } from '../../interfaces/interfaces';
 import { ProductoService } from '../producto.service';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
-import { FlowbiteService } from '../../flowbite.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { NgForm } from '@angular/forms';
 import { CategoriaService } from '../../categoria/categoria.service';
@@ -16,7 +15,6 @@ import { CategoriaService } from '../../categoria/categoria.service';
 
 export class ProductoComponent {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter(); // Emite el término de búsqueda con debounce
-  @ViewChildren('dynamicButton') dynamicButtons!: QueryList<ElementRef>;
   productos: Producto[] = [];
   categorias: Categoria[] = [];
   hayError: boolean = false;
@@ -45,16 +43,7 @@ export class ProductoComponent {
   private debouncer: Subject<string> = new Subject<string>(); // Subject para manejar el debounce
   private destroy$: Subject<void> = new Subject<void>(); // Subject para manejar la destrucción del componente
 
-  constructor(private categoriaService: CategoriaService, private productoService: ProductoService, private flowbiteService: FlowbiteService, private messageService: MessageService) { }
-
-  ngAfterViewInit(): void {
-    this.flowbiteService.loadFlowbite();
-    this.dynamicButtons.changes.subscribe(() => {
-      setTimeout(() => {
-        this.flowbiteService.loadFlowbite();
-      }, 100);
-    });
-  }
+  constructor(private categoriaService: CategoriaService, private productoService: ProductoService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.listarCategorias();

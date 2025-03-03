@@ -11,7 +11,7 @@ import { catchError, map, tap, distinctUntilChanged } from 'rxjs/operators';
 })
 export class AuthService {
   // Si se probara la api localmente remplazar por: http://localhost:3000
-  private readonly apiUrl = 'http://dc0ws0ggw0sg8wscskcocg4s.137.184.75.110.sslip.io/';
+  private readonly apiUrl = 'https://myjsonserver-production.up.railway.app';
   private readonly tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.checkInitialAuthState());
   private isAdminSubject = new BehaviorSubject<boolean>(this.checkInitialAdminState());

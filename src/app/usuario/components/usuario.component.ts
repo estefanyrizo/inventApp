@@ -2,7 +2,6 @@ import { Component, EventEmitter, Output, OnInit, OnDestroy, ViewChild, ElementR
 import { UsuarioService } from '../usuario.service';
 import { User } from '../../interfaces/interfaces';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
-import { FlowbiteService } from '../../flowbite.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { NgForm } from '@angular/forms';
 
@@ -33,12 +32,10 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   private debouncer: Subject<string> = new Subject<string>();
   private destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private usuarioService: UsuarioService, private flowbiteService: FlowbiteService, private messageService: MessageService) { }
+  constructor(private usuarioService: UsuarioService, private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.flowbiteService.loadFlowbite(flowbite => {
-      console.log('Flowbite loaded', flowbite);
-    });
+
     this.listar();
 
     this.debouncer

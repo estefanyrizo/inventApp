@@ -2,7 +2,6 @@ import { Component, EventEmitter, Output, AfterViewInit, ViewChildren, QueryList
 import { Categoria } from '../../interfaces/interfaces';
 import { CategoriaService } from '../categoria.service';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
-import { FlowbiteService } from '../../flowbite.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { NgForm } from '@angular/forms';
 
@@ -14,9 +13,8 @@ import { NgForm } from '@angular/forms';
   styles: ``,
   providers: [ConfirmationService, MessageService],
 })
-export class CategoriaComponent implements AfterViewInit {
+export class CategoriaComponent {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter(); // Emite el término de búsqueda con debounce
-  @ViewChildren('dynamicButton') dynamicButtons!: QueryList<ElementRef>;
 
   categorias: Categoria[] = [];
   hayError: boolean = false;
@@ -31,16 +29,7 @@ export class CategoriaComponent implements AfterViewInit {
   private debouncer: Subject<string> = new Subject<string>(); // Subject para manejar el debounce
   private destroy$: Subject<void> = new Subject<void>(); // Subject para manejar la destrucción del componente
 
-  constructor(private categoriaService: CategoriaService, private flowbiteService: FlowbiteService, private messageService: MessageService) { }
-
-  ngAfterViewInit(): void {
-    this.flowbiteService.loadFlowbite();
-    this.dynamicButtons.changes.subscribe(() => {
-      setTimeout(() => {
-        this.flowbiteService.loadFlowbite();
-      }, 100);
-    });
-  }
+  constructor(private categoriaService: CategoriaService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.listar(); // Llama al método listar al inicializar el componente

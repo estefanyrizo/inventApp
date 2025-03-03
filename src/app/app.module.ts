@@ -13,20 +13,22 @@ import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { CategoriaModule } from './categoria/categoria.module';
 import { ProductoModule } from './producto/producto.module';
-import { LoggedInLayoutComponent } from "./shared/logged-in-layout/components/logged-in-layout.component";
+import { FlowbiteService } from './flowbite.service';
+import { LoggedInLayoutModule } from './shared/logged-in-layout/logged-in-layout.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoggedInLayoutComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     AuthModule,
+    AppRoutingModule,
     UsuarioModule,
     CategoriaModule,
-    ProductoModule
+    ProductoModule,
+    LoggedInLayoutModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),
@@ -43,6 +45,7 @@ import { LoggedInLayoutComponent } from "./shared/logged-in-layout/components/lo
         },
       },
     }),
+    FlowbiteService, // FlowbiteService ya está correctamente proporcionado
   ],
   bootstrap: [AppComponent]
 })

@@ -10,11 +10,11 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent {
   user = { username: '', password: '' };
-  errorMessage = ''; 
+  errorMessage = '';
   isLoading = false;
 
   constructor(private authService: AuthService, private router: Router) { }
-  
+
   ngOnInit(): void {
     this.authService.logout();
   }
@@ -24,14 +24,14 @@ export class LoginComponent {
       this.errorMessage = 'Por favor, completa todos los campos.';
       return;
     }
-  
+
     this.isLoading = true;
     this.errorMessage = '';
-  
+
     this.authService.login(this.user).subscribe({
       next: (res) => {
         const token = res?.token;
-  
+
         if (token) {
           // Llama a isActive para verificar si el usuario está activo
           this.authService.isActive().subscribe({
@@ -41,7 +41,7 @@ export class LoginComponent {
                 this.isLoading = false;
                 return;
               }
-  
+
               // Si está activo, guarda el token y navega
               this.authService.saveAuthData(token);
               form.resetForm();
@@ -66,6 +66,6 @@ export class LoginComponent {
       },
     });
   }
-  
-  
+
+
 }

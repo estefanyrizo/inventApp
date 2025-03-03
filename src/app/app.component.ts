@@ -1,15 +1,23 @@
-import { Component } from '@angular/core';
-import { AuthService } from './auth/auth.service'; // Importa el servicio de autenticación
-import { Router } from '@angular/router';
+import { Component, AfterViewInit } from '@angular/core';
+import { FlowbiteService } from './flowbite.service';
 
 @Component({
+  standalone: false,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  standalone: false,
 })
-export class AppComponent {
-  title = 'Mi Aplicación';
+export class AppComponent implements AfterViewInit {
+  buttons: string[] = ['Button 1', 'Button 2'];
 
-  constructor(private router: Router) {}
+  constructor(private flowbiteService: FlowbiteService) {}
+
+  ngAfterViewInit(): void {
+    this.flowbiteService.loadFlowbite();
+  }
+
+  agregarModal(): void {
+    // Agrega un modal dinámico al DOM
+    this.flowbiteService.reinitializeFlowbite(); // Re-inicializa Flowbite
+  }
 }
