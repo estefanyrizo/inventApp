@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable, of, from, timer } from 'rxjs';
-import { catchError, map, switchMap, tap, distinctUntilChanged } from 'rxjs/operators';
+import { catchError, map, tap, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',

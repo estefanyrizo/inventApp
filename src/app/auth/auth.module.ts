@@ -6,9 +6,6 @@ import { FormsModule } from '@angular/forms';
 // Servicios
 import { AuthService } from './auth.service';
 
-// Interceptores
-import { AuthInterceptor } from './auth.interceptor';
-
 // Guards
 import { AuthGuard } from './auth.guard';
 
