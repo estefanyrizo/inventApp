@@ -1,0 +1,95 @@
+<header>
+    <div>
+        <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
+            <div class="px-3 py-3 lg:px-5 lg:pl-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-start rtl:justify-end">
+                        <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar"
+                            aria-controls="logo-sidebar" type="button"
+                            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                            aria-label="Abrir menú lateral">
+                            <span class="sr-only">Abrir menú lateral</span>
+                            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" fill-rule="evenodd"
+                                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                                </path>
+                            </svg>
+                        </button>
+                        <a href="https://flowbite.com" class="flex ms-2 md:me-24">
+                            <svg class="w-8 h-8 text-[#8B5CF6]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd"
+                                    d="M9 2a1 1 0 0 0-1 1H6a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2a1 1 0 0 0-1-1H9Zm1 2h4v2h1a1 1 0 1 1 0 2H9a1 1 0 0 1 0-2h1V4Zm5.707 8.707a1 1 0 0 0-1.414-1.414L11 14.586l-1.293-1.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z"
+                                    clip-rule="evenodd" />
+                            </svg><span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap ml-2">
+                                InventApp</span>
+                        </a>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex items-center ms-3">
+                            <div class="pr-4">
+                                <button type="button"
+                                    class="flex text-md bg-[#8B5CF6] p-3 rounded-full focus:ring-4 focus:ring-[#BA9BEF]"
+                                    aria-expanded="false" data-dropdown-toggle="dropdown-user"
+                                    aria-label="Menú de usuario">
+                                    <span class="sr-only">Abrir menú de usuario</span>
+                                    <i class="pi pi-user" style="color: white"></i>
+                                </button>
+                            </div>
+                            <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-xl"
+                                id="dropdown-user">
+                                <div class="px-4 py-3" role="none">
+                                    <p class="text-sm text-gray-900" role="none"><span class="font-medium">Usuario:
+                                        </span>Estefany123</p>
+                                </div>
+                                <ul class="py-1" role="none">
+                                    <li>
+                                        <a (click)="logout()"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem">Cerrar sesión</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <aside id="logo-sidebar"
+            class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0"
+            aria-label="Sidebar">
+            <div class="h-full px-3 pb-4 overflow-y-auto bg-white">
+                <ul class="space-y-2 font-medium">
+
+                    <li *ngIf="authService.isAdmin$ | async">
+                        <a class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+                            routerLink="/admin/categorias">
+                            <i class="pi pi-bars"></i>
+                            <span class="flex-1 ms-3 whitespace-nowrap">Categorías</span>
+                        </a>
+                    </li>
+                    <li *ngIf="authService.isAdmin$ | async">
+                        <a class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+                            routerLink="/admin/usuarios">
+                            <i class="pi pi-users"></i>
+                            <span class="flex-1 ms-3 whitespace-nowrap">Usuarios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+                            routerLink="/admin/productos">
+                            <i class="pi pi-box"></i>
+                            <span class="flex-1 ms-3 whitespace-nowrap">Productos</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</header>
+
+<main class="p-4 sm:ml-64 rounded-lg mt-14">
+    <router-outlet></router-outlet>
+</main>

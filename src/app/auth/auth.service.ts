@@ -1,9 +1,10 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, from, timer } from 'rxjs';
+import { catchError, map, switchMap, tap, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,30 +12,42 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 export class AuthService {
   private readonly apiUrl = 'http://localhost:3000';
   private readonly tokenKey = 'authToken';
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-  private isAdminSubject = new BehaviorSubject<boolean>(false);
-  isAdmin$ = this.isAdminSubject.asObservable();
-  private currentToken: string | null = null; // Almacena el token actual
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.checkInitialAuthState());
+  private isAdminSubject = new BehaviorSubject<boolean>(this.checkInitialAdminState());
+  isAdmin$ = this.isAdminSubject.asObservable().pipe(distinctUntilChanged());
+  isAuthenticated$ = this.isAuthenticatedSubject.asObservable().pipe(distinctUntilChanged());
+  private currentToken: string | null = this.getToken(); // Almacena el token actual
 
   constructor(
     private http: HttpClient,
     private router: Router,
-
     @Inject(PLATFORM_ID) private platformId: object
   ) {
-    this.currentToken = this.getToken(); // Inicializa el token actual
     if (isPlatformBrowser(this.platformId)) {
       this.startLocalStorageMonitoring();
     }
   }
 
+  private checkInitialAuthState(): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    return !!this.getDecodedToken(); //verifica que el token sea valido
+  }
+  private checkInitialAdminState(): boolean {
+    const decodedToken = this.getDecodedToken();
+    if (!decodedToken || !decodedToken.role) {
+      return false;
+    }
+    return decodedToken.role.toLowerCase() === 'admin';
+  }
 
   login(user: { username: string; password: string }): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, user).pipe(
       tap((response) => {
         this.saveAuthData(response.token);
-        this.isAuthenticatedSubject.next(true);
+        this.updateAuthState();
       })
     );
   }
@@ -43,37 +56,35 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.tokenKey, token);
     }
+    this.currentToken = token;
   }
 
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
     }
-    this.isAuthenticatedSubject.next(false);
+    this.currentToken = null;
+    this.updateAuthState();
     this.router.navigate(['/login']);
   }
 
-  getToken(): string {
-    return isPlatformBrowser(this.platformId) ? localStorage.getItem(this.tokenKey) || '' : '';
+  getToken(): string | null {
+    return isPlatformBrowser(this.platformId) ? localStorage.getItem(this.tokenKey) : null;
   }
-
 
   isAuthenticated(): Observable<boolean> {
     const token = this.getToken();
     if (!token) {
-      this.isAuthenticatedSubject.next(false);
       return of(false);
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.post<{ message: string }>(`${this.apiUrl}/verifyToken`, {}, { headers }).pipe(
-      tap(() => {
-        this.isAuthenticatedSubject.next(true);
-      }),
+      tap(() => this.updateAuthState()),
       map(() => true),
       catchError(() => {
-        this.isAuthenticatedSubject.next(false);
+        this.updateAuthState();
         return of(false);
       })
     );
@@ -85,11 +96,7 @@ export class AuthService {
       return null;
     }
     try {
-      const payload = token.split('.')[1];
-      if (!payload) {
-        return null; // Token no tiene el formato esperado.
-      }
-      return JSON.parse(atob(payload));
+      return jwtDecode(token);
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;
@@ -97,41 +104,41 @@ export class AuthService {
   }
 
   getRole(): Observable<string> {
-    const decodedToken = this.getDecodedToken();
-    if (!decodedToken || !decodedToken.role) {
-      return of('');
-    }
-    return of(decodedToken.role);
+    return of(this.getDecodedToken()?.role || '');
   }
 
   isAdmin(): Observable<boolean> {
+    return of(this.getDecodedToken()?.role?.toLowerCase() === 'admin' || false);
+  }
+
+  private updateAuthState(): void {
     const decodedToken = this.getDecodedToken();
-    if (!decodedToken || !decodedToken.role) {
-      this.isAdminSubject.next(false);
-      return of(false);
-    }
-    const isAdmin = decodedToken.role === 'admin';
+    const isAuthenticated = !!decodedToken;
+    const isAdmin = decodedToken?.role?.toLowerCase() === 'admin';
+    this.isAuthenticatedSubject.next(isAuthenticated);
     this.isAdminSubject.next(isAdmin);
-    return of(isAdmin);
   }
 
   private startLocalStorageMonitoring(): void {
-    setInterval(() => {
-      const newToken = this.getToken();
-      if (newToken !== this.currentToken) {
-        this.currentToken = newToken;
-        if (!newToken) {
-          this.logout();
-        } else {
-          this.isAuthenticated().subscribe(
-            (isAuthenticated) => {
+    timer(0, 1000)
+      .pipe(
+        map(() => this.getToken()),
+        distinctUntilChanged()
+      )
+      .subscribe((newToken) => {
+        if (newToken !== this.currentToken) {
+          this.currentToken = newToken;
+          this.updateAuthState();
+          if (!newToken) {
+            this.logout();
+          } else {
+            this.isAuthenticated().subscribe((isAuthenticated) => {
               if (!isAuthenticated) {
                 this.logout();
               }
-            }
-          );
+            });
+          }
         }
-      }
-    }, 1000); // Verifica cada segundo (ajusta según sea necesario)
+      });
   }
 }

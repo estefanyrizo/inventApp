@@ -8,18 +8,28 @@ import { AuthGuard } from './auth/auth.guard';
 import { UsuarioComponent } from './usuario/components/usuario.component';
 import { AdminGuard } from './auth/admin.guard';
 import { CategoriaComponent } from './categoria/components/categoria.component';
+import { ProductoComponent } from './producto/components/producto.component';
+import { LoggedInLayoutComponent } from './shared/logged-in-layout/components/logged-in-layout.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: '/admin/productos', pathMatch: 'full' },
+  // { path: '**', redirectTo: '/login', },
+  {
+    path: 'admin',
+    component: LoggedInLayoutComponent,
+    children: [
+      { path: 'usuarios', component: UsuarioComponent, canActivate: [AuthGuard, AdminGuard] },
+      { path: 'categorias', component: CategoriaComponent, canActivate: [AuthGuard, AdminGuard] },
+      { path: 'productos', component: ProductoComponent, canActivate: [AuthGuard] },
+    ]
+  },
   { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'usuarios', component: UsuarioComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'categorias', component: CategoriaComponent, canActivate: [AuthGuard, AdminGuard] },
+
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

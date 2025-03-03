@@ -257,7 +257,7 @@ module.exports = (req, res, next) => {
     const db = readDb();
     const productos = db.productos;
 
-    const productoExistente = productos.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase());
+    const productoExistente = productos.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase(), );
 
     if (productoExistente) {
       return res.status(400).json({ message: 'El producto ya existe' });
@@ -272,5 +272,36 @@ module.exports = (req, res, next) => {
     writeDb(db);
 
     return res.status(201).json(nuevoProducto);
+  } 
+  if (method === 'PATCH' && url.startsWith('/productos/')) {
+    const productoId = parseInt(url.split('/')[2], 10);
+
+    if (isNaN(productoId)) {
+      return res.status(400).json({ message: 'ID de productos no válido' });
+    }
+
+    const db = readDb();
+    const productos = db.productos;
+
+    const productoIndex = productos.findIndex((c) => c.id === productoId);
+    if (productoIndex === -1) {
+      return res.status(404).json({ message: `productos con ID ${productoId} no encontrado` });
+    }
+
+    const { nombre, descripcion, precio, stock, categoriaId } = body;
+    if (!nombre && !precio && !categoriaId) {
+      return res.status(400).json({ message: 'No se proporcionaron campos para actualizar' });
+    }
+
+    const nombreExistente = productos.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase() && c.id !== productoId);
+    if (nombreExistente) { 
+      return res.status(400).json({ message: 'El nombre del producto ya está en uso' });
+    }
+
+    productos[productoIndex].nombre = nombre;
+    writeDb(db);
+
+    return res.status(200).json({mensaje : 'Producto Actualizado'});
   }
+  
 };

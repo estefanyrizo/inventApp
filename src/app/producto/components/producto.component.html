@@ -1,0 +1,128 @@
+<!-- Botón flotante para mostrar/ocultar el formulario de agregar -->
+<button class="fab-button" (click)="mostrarFormularioAgregar = !mostrarFormularioAgregar">+</button>
+
+<!-- Formulario de agregar -->
+<div *ngIf="mostrarFormularioAgregar" class="formulario-agregar">
+    <h3>Agregar Producto</h3>
+    <form (ngSubmit)="agregarProducto()" #productoForm="ngForm">
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nuevoProducto.nombre"
+                required />
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion"
+                [(ngModel)]="nuevoProducto.descripcion"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="number" class="form-control" id="precio" name="precio" [(ngModel)]="nuevoProducto.precio"
+                required />
+        </div>
+
+        <div class="mb-3">
+            <label for="stock" class="form-label">Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock" [(ngModel)]="nuevoProducto.stock"
+                required />
+        </div>
+
+        <div class="mb-3">
+            <label for="categoriaId" class="form-label">Categoría</label>
+            <input type="number" class="form-control" id="categoriaId" name="categoriaId"
+                [(ngModel)]="nuevoProducto.categoriaId" required />
+        </div>
+
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="mostrarFormularioAgregar = false">
+            Cancelar
+        </button>
+    </form>
+</div>
+
+<!-- Formulario de edición -->
+<div *ngIf="mostrarFormularioEditar" class="mt-4">
+    <h3>Editar Producto</h3>
+    <form (ngSubmit)="editarProducto(productoSeleccionado)">
+      <div class="form-group">
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nuevoProducto.nombre"
+                required />
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion"
+                [(ngModel)]="nuevoProducto.descripcion"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="number" class="form-control" id="precio" name="precio" [(ngModel)]="nuevoProducto.precio"
+                required />
+        </div>
+
+        <div class="mb-3">
+            <label for="stock" class="form-label">Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock" [(ngModel)]="nuevoProducto.stock"
+                required />
+        </div>
+
+        <div class="mb-3">
+            <label for="categoriaId" class="form-label">Categoría</label>
+            <input type="number" class="form-control" id="categoriaId" name="categoriaId"
+                [(ngModel)]="nuevoProducto.categoriaId" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success">Guardar Cambios</button>
+      <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+
+<div *ngIf="errorAgregarProducto">{{ errorAgregarProducto }}</div>
+
+<!-- Formulario de búsqueda -->
+<form (ngSubmit)="buscar()" autocomplete="off">
+    <input type="text" name="termino" class="form-control" [(ngModel)]="termino" (input)="teclaPresionada()" />
+    <button type="submit">Buscar</button>
+</form>
+
+<!-- Mensaje de error -->
+<div *ngIf="hayError">No se encontraron productos con ese nombre.</div>
+
+
+<!-- Tabla de productos -->
+<table *ngIf="productos.length > 0">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Categoria</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let producto of productos; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>{{producto.descripcion}}</td>
+            <td>{{producto.precio}}</td>
+            <td>{{producto.stock}}</td>
+            <td>{{producto.categoriaId}}</td>
+            <td>
+                <button class="btn btn-primary" (click)="mostrarFormularioEdicion(producto)">
+                    Editar
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -26,6 +26,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   hayError: boolean = false;
   nuevoUsuario: User = { id: 0, username: '', password: '', role: 'user' };
   errorAgregarUsuario: string | null = null;
+  errorBuscar: string | null = null;
   @ViewChild('editUserModal') editUserModal: ElementRef | undefined;
   @ViewChild('usuarioForm') usuarioForm: NgForm | undefined;
 
@@ -73,10 +74,15 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     this.usuarioService.buscarUsuario(this.termino).subscribe(
       (usuarios) => {
         this.usuarios = usuarios;
-        this.hayError = false;
       },
-      () => {
+      (error) => {
         this.usuarios = [];
+        this.errorBuscar = (error.error.message as string) || 'Error al agregar usuario';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorBuscar,
+        });
       }
     );
   }
@@ -89,8 +95,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
           summary: 'Éxito',
           detail: 'Usuario agregado correctamente',
         });
-        this.listar();
-        this.nuevoUsuario = { id: 0, username: '', password: '', role: '' };
+
       },
       (error) => {
         this.errorAgregarUsuario = (error.error.message as string) || 'Error al agregar usuario';
@@ -102,7 +107,6 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       }
     );
   }
-
 
   cambiarRol(usuario: User) {
     const nuevoRol = usuario.role === 'admin' ? 'user' : 'admin';

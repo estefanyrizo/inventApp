@@ -11,11 +11,5 @@ import { Router } from '@angular/router';
 export class AppComponent {
   title = 'Mi Aplicación';
 
-  constructor(public authService: AuthService, private router: Router) {}
-
-  // Método para cerrar sesión
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']); // Redirige al login después de cerrar sesión
-  }
+  constructor(private router: Router) {}
 }

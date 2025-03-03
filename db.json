@@ -10,13 +10,13 @@
       "id": 2,
       "username": "user",
       "password": "user123",
-      "role": "admin"
+      "role": "user"
     },
     {
       "id": 3,
       "username": "dsfd",
       "password": "dfsdf",
-      "role": "user"
+      "role": "admin"
     },
     {
       "id": 4,
@@ -47,6 +47,36 @@
       "username": "adminsdfsdf",
       "password": "asffsdf",
       "role": "user"
+    },
+    {
+      "id": 9,
+      "username": "admindsfsdf",
+      "password": "dsdfsdf",
+      "role": "user"
+    },
+    {
+      "id": 10,
+      "username": "enrique",
+      "password": "1",
+      "role": "user"
+    },
+    {
+      "id": 11,
+      "username": "mary",
+      "password": "1",
+      "role": "user"
+    },
+    {
+      "id": 12,
+      "username": "dfsdf",
+      "password": "fdgffdg",
+      "role": "user"
+    },
+    {
+      "id": 13,
+      "username": "efer",
+      "password": "fsdfd",
+      "role": "user"
     }
   ],
   "categorias": [
@@ -76,7 +106,7 @@
     },
     {
       "id": 7,
-      "nombre": "Enrique"
+      "nombre": "Enriqueghghvhv"
     },
     {
       "id": 8,
@@ -85,12 +115,28 @@
     {
       "id": 9,
       "nombre": "ropassdsd"
+    },
+    {
+      "id": 10,
+      "nombre": "nueva cat"
+    },
+    {
+      "id": 11,
+      "nombre": "nueva catdddd"
+    },
+    {
+      "id": 12,
+      "nombre": "Enrique"
+    },
+    {
+      "id": 13,
+      "nombre": "denuevocccc"
     }
   ],
   "productos": [
     {
       "id": 1,
-      "nombre": "Laptop Gamer",
+      "nombre": "Laptop Gamersdfsdf",
       "descripcion": "Laptop con procesador Intel i7 y 16GB de RAM",
       "precio": 1500.99,
       "stock": 10,
@@ -106,7 +152,7 @@
     },
     {
       "id": 3,
-      "nombre": "Teclado Mecánico",
+      "nombre": "estefanydfsdf",
       "descripcion": "Teclado RGB con switches rojos",
       "precio": 80.75,
       "stock": 20,
@@ -158,6 +204,14 @@
       "descripcion": "fg",
       "precio": 1,
       "stock": 1,
+      "categoriaId": 1
+    },
+    {
+      "id": 10,
+      "nombre": "ummkmmn",
+      "descripcion": "gis",
+      "precio": 8999.333333333334,
+      "stock": 23,
       "categoriaId": 1
     }
   ]

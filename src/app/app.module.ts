@@ -12,17 +12,21 @@ import Tema from './tema';
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { CategoriaModule } from './categoria/categoria.module';
+import { ProductoModule } from './producto/producto.module';
+import { LoggedInLayoutComponent } from "./shared/logged-in-layout/components/logged-in-layout.component";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoggedInLayoutComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     AuthModule,
     UsuarioModule,
-    CategoriaModule
+    CategoriaModule,
+    ProductoModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),

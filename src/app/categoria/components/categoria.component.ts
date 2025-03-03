@@ -163,7 +163,7 @@ export class CategoriaComponent {
       },
       (err) => {
 
-        this.errorAgregarCategoria = 'Error al agregar el usuario. Inténtalo de nuevo.';
+        this.errorAgregarCategoria = 'El nombre de la categoría ya está en uso';
       }
     );
   }
