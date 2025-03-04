@@ -1,126 +1,114 @@
-<!-- Table component ***************** -->
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 bg-white">
-    <div class="flex items-center justify-between flex-column md:flex-row flex-wrap mb-4">
-        <div>
-            <a type="button" data-modal-target="editUserModal" data-modal-show="editUserModal"
-                class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2">Agregar
-                usuario</a>
-        </div>
-        <form (ngSubmit)="buscar()" autocomplete="off">
-            <label for="table-search" class="sr-only">Buscar</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
-                </div>
-                <input type="text" id="table-search-users" name="termino"
-                    class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Buscar por nombre de usuario" [(ngModel)]="termino" (input)="teclaPresionada()" />
+<p-toast></p-toast>
+<div class="card">
+    <p-table [value]="usuarios">
+        <ng-template pTemplate="caption">
+            <div class="flex justify-between items-center flex-column sm:flex-row">
+                <p-button (click)="visible = !visible" class="p-button-outlined mb-2" label="Agregar nuevo usuario" />
+                <form (ngSubmit)="buscar()" autocomplete="off">
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+                        <input pInputText type="text" [(ngModel)]="termino" name="termino" (input)="teclaPresionada()"
+                            placeholder="Buscar" />
+                    </p-iconfield>
+                </form>
             </div>
-        </form>
-    </div>
-    <table *ngIf="usuarios.length > 0" class="w-full text-sm text-gray-500 text-center">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-                <th scope="col" class="px-6 py-4">Nombre</th>
-                <th scope="col" class="px-6 py-4">Estado</th>
-                <th scope="col" class="px-6 py-4">Rol</th>
-                <th scope="col" class="px-6 py-4">Accion</th>
-            </tr>
-        </thead>
-        <tbody *ngFor="let usuario of usuarios; let i = index">
-            <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
-                <td class="px-6 py-4">{{ usuario.username }}</td>
-                <td class="px-6 py-4">
-                    <button (click)="cambiarEstado(usuario)"
-                        class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2"
-                        [ngClass]="{'bg-red-400': usuario.estado === 'inactivo', 'bg-green-400': usuario.estado === 'activo'}">
-                        {{usuario.estado}}
-                    </button>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="flex items-center">
-                        <div class="h-2.5 w-2.5 rounded-full me-2"  [ngClass]="{'bg-green-400': usuario.role === 'admin', 'bg-blue-400': usuario.role === 'user'}" >
-                        </div>
-                        {{usuario.role }}
-                    </div>
-                </td>
-                <td class="px-6 py-4">
-                    <button (click)="cambiarRol(usuario)"
-                        class="focus:outline-none text-white bg-[#8B5CF6] hover:bg-[#7C3AED] focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2">
-                        Cambiar rol
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        </ng-template>
 
-    <!-- Edit user modal -->
-    <div class="formulario-agregar" id="editUserModal" tabindex="-1" aria-hidden="true"
-        class="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative w-full max-w-2xl max-h-full">
-            <!-- Modal content -->
-            <form (ngSubmit)="agregarUsuario()" #usuarioForm="ngForm" class="relative bg-white rounded-lg shadow-sm">
-                <!-- Modal header -->
-                <div class="flex items-start justify-between p-4 border-b rounded-t border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900">
-                        Agregar un nuevo usuario
-                    </h3>
-                    <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
-                        data-modal-hide="editUserModal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Mensaje de error -->
-                <div class="p-6 space-y-6">
-                    <div class="grid grid-cols-6 gap-6">
-                        <div class="col-span-6 sm:col-span-3">
-                            <label for="username" class="block text-900 font-medium mb-2"
-                                [ngClass]="{ 'text-red-500': errorAgregarUsuario }">Nombre de
-                                usuario</label>
-                            <input type="text" name="username" id="username" class="w-full mb-3" required="" pInputText
-                                [(ngModel)]="nuevoUsuario.username" [ngClass]="{ 'ng-invalid': errorAgregarUsuario }" />
-                        </div>
-                        <div class="col-span-6 sm:col-span-3">
-                            <label for="password" class="block text-900 font-medium mb-2"
-                                [ngClass]="{ 'text-red-500': errorAgregarUsuario }">Contraseña</label>
-                            <input type="password" name="password" id="password" class="w-full mb-3" required=""
-                                pInputText [(ngModel)]="nuevoUsuario.password"
-                                [ngClass]="{ 'ng-invalid': errorAgregarUsuario }" />
-                        </div>
-                        <div class="col-span-6 sm:col-span-3">
-                            <label for="roles" class="block text-900 font-medium mb-2"
-                                [ngClass]="{ 'text-red-500': errorAgregarUsuario }">Rol</label>
-                            <p-dropdown [options]="roles" [(ngModel)]="nuevoUsuario.role" name="roles"
-                                optionLabel="name" optionValue="value" placeholder="Selecciona un rol"
-                                class="w-full md:w-56" [ngClass]="{ 'ng-invalid': errorAgregarUsuario }"></p-dropdown>
-                        </div>
+        <ng-template pTemplate="header">
+            <tr class="w-full text-sm text-gray-500 text-center">
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">
+                        Nombre
                     </div>
-                </div>
-                <!-- Modal footer -->
-                <div class="flex items-center p-6 space-x-3 rtl:space-x-reverse">
-                    <p-toast />
-                    <p-confirmdialog />
-                    <p-button
-                        class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
-                        type="submit" label="Guardar" />
-                    <p-button label="Cancelar" #cerrarModal severity="danger"
-                        class="inline-flex items-center justify-center text-xs font-medium me-2 px-2.5 py-0.5 rounded-full  w-24"
-                        data-modal-hide="editUserModal" />
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Edit user modal -->
+                </th>
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">
+                        Apellido
+                    </div>
+                </th>
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">
+                        Username
+                    </div>
+                </th>
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">
+                        Permisos
+                    </div>
+                </th>
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">
+                        Estado
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-usuario>
+            <tr>
+                <td>
+                    {{ usuario.nombre }}
+                </td>
+                <td>
+                    {{ usuario.apellido}}
+                </td>
+                <td>
+                    {{ usuario.username }}
+                </td>
+                <td>
+                    <p-selectbutton (onChange)="cambiarRol(usuario)" [(ngModel)]="usuario.role" [options]="roles"
+                        optionLabel="label" optionValue="value" aria-labelledby="basic" />
+                </td>
+                <td>
+                    <p-toggleswitch (onChange)="cambiarEstado(usuario)" [(ngModel)]="usuario.estado" />
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="4">No se encontraron usuarios.</td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>
 
-<!-- ******************************* -->
+<p-dialog header="Agregar nuevo usuario" [modal]="true" [(visible)]="visible" [style]="{ width: '50rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+    <form (ngSubmit)="agregarUsuario()" #usuarioForm="ngForm">
+        <div class="grid grid-cols-12 gap-3">
+            <div class="col-span-12 sm:col-span-6">
+                <label for="username" class="block text-900 font-medium mb-2">Nombre</label>
+                <input type="text" name="name" id="name" class="w-full mb-3"  pInputText
+                    [(ngModel)]="nuevoUsuario.nombre" />
+            </div>
+            <div class="col-span-12 sm:col-span-6">
+                <label for="apellido" class="block text-900 font-medium mb-2">Apellido</label>
+                <input type="text" name="apellido" id="apellido" class="w-full mb-3"  pInputText
+                    [(ngModel)]="nuevoUsuario.apellido" />
+            </div>
+            <div class="col-span-12 sm:col-span-6">
+                <label for="username" class="block text-900 font-medium mb-2">Nombre de
+                    usuario</label>
+                <input type="text" name="username" id="username" class="w-full mb-3"  pInputText
+                    [(ngModel)]="nuevoUsuario.username" />
+            </div>
+            <div class="col-span-12 sm:col-span-6">
+                <label for="password" class="block text-900 font-medium mb-2">Contraseña</label>
+                <input type="password" name="password" id="password" class="w-full mb-3"  pInputText
+                    [(ngModel)]="nuevoUsuario.password" />
+            </div>
+            <div class="col-span-12 sm:col-span-12">
+                <label for="rol" class="block text-900 font-medium mb-2">Permisos</label>
+                <p-selectbutton name="rol" [(ngModel)]="nuevoUsuario.role" [options]="roles" optionLabel="label"
+                    optionValue="value" aria-labelledby="basic" />
+            </div>
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancelar" severity="secondary" (click)="cancelarAgregar()" />
+            <p-button label="Guardar" type="submit" />
+        </div>
+    </form>
+</p-dialog>

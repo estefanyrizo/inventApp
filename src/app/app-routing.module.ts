@@ -9,6 +9,7 @@ import { AdminGuard } from './auth/admin.guard';
 import { CategoriaComponent } from './categoria/components/categoria.component';
 import { ProductoComponent } from './producto/components/producto.component';
 import { LoggedInLayoutComponent } from './shared/logged-in-layout/components/logged-in-layout.component';
+import { AppLayout } from './layout/component/app.layout';
 
 
 const routes: Routes = [
@@ -16,7 +17,7 @@ const routes: Routes = [
   // { path: '**', redirectTo: '/login', },
   {
     path: 'admin',
-    component: LoggedInLayoutComponent,
+    component: AppLayout,
     children: [
       { path: 'usuarios', component: UsuarioComponent, canActivate: [AuthGuard, AdminGuard] },
       { path: 'categorias', component: CategoriaComponent, canActivate: [AuthGuard, AdminGuard] },

@@ -16,12 +16,12 @@ import { CategoriaService } from '../../categoria/categoria.service';
 
 export class ProductoComponent {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter(); // Emite el término de búsqueda con debounce
+  visibleE: boolean = false;
+  visibleA: boolean = false;
   productos: Producto[] = [];
   categorias: Categoria[] = [];
-  hayError: boolean = false;
   termino: string = '';
   errorAgregarProducto: string | null = '';
-  errorBuscar: string | null = null;
   nuevoProducto: Producto = {
     id: 0,
     nombre: '',
@@ -30,8 +30,6 @@ export class ProductoComponent {
     stock: 0,
     categoriaId: 0
   };
-  mostrarFormularioEditar: boolean = false;
-  mostrarFormularioAgregar: boolean = false;
   productoSeleccionado: Producto = {
     id: 0,
     nombre: '',
@@ -72,12 +70,7 @@ export class ProductoComponent {
     this.categoriaService.getCategorias().subscribe(
       (categorias) => {
         this.categorias = categorias;
-        this.hayError = false;
       },
-      (err) => {
-        this.categorias = [];
-        this.hayError = true;
-      }
     );
   }
 
@@ -86,17 +79,7 @@ export class ProductoComponent {
     this.productoService.getproductos().subscribe(
       (productos) => {
         this.productos = productos;
-        this.hayError = false;
       },
-      (error) => {
-        this.productos = [];
-        this.errorBuscar = (error.error.message as string) || 'Error al buscar usuario';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: this.errorBuscar,
-        });
-      }
     );
   }
 
@@ -106,15 +89,6 @@ export class ProductoComponent {
       (productos) => {
         this.productos = productos;
       },
-      (error) => {
-        this.productos = [];
-        this.errorBuscar = (error.error.message as string) || 'Error al buscar usuario';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: this.errorBuscar,
-        });
-      }
     );
   }
   // Método que se ejecuta cada vez que se presiona una tecla
@@ -124,16 +98,12 @@ export class ProductoComponent {
 
   // Método para manejar las resultados
   resultados(termino: string) {
-    this.hayError = false; // Reinicia el estado de error
 
     // Aquí puedes hacer una solicitud HTTP para obtener resultados
     this.productoService.buscarProducto(termino).subscribe(
       (productos) => {
         this.productos = productos; // Asigna los usuarios encontrados
       },
-      (err) => {
-        this.productos = []; // Limpia la lista de usuarios en caso de error
-      }
     );
   }
 
@@ -142,28 +112,16 @@ export class ProductoComponent {
     // Reinicia el mensaje de error
     this.errorAgregarProducto = null;
 
-    // Validación de campos obligatorios
-    if (!this.nuevoProducto.nombre || !this.nuevoProducto.precio || !this.nuevoProducto.stock || !this.nuevoProducto.categoriaId) {
-      this.errorAgregarProducto = 'Campos requerodos';
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: this.errorAgregarProducto,
-      });
-      return;
-    }
-
-
     // Llama al servicio para agregar el usuario
     this.productoService.agregarProducto(this.nuevoProducto).subscribe(
       (producto) => {
-        this.productos.push(producto); // Agrega el nuevo usuario a la lista
+        this.visibleA = false;
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
-          detail: 'Categoria agregada correctamente',
+          detail: 'Producto Agregado exitosamente',
         });
-        this.cerrarModal('addProductoModal');
+        this.listar();
       },
       (error) => {
         this.errorAgregarProducto = (error.error.message as string) || 'Error al agregar producto';
@@ -176,35 +134,15 @@ export class ProductoComponent {
     );
   }
 
-  seleccionarProducto(categoria: any) {
-    this.productoSeleccionado = { ...categoria }; // Crea una copia para evitar la mutación directa
-  }
-
-  abrirModal(modalId: string) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.remove('hidden');
-    }
-  }
-  cerrarModal(modalId: string) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.add('hidden');
-    }
-  }
-
-
   // Muestra el formulario de edición y llena los datos
   mostrarFormularioEdicion(producto: Producto): void {
-    this.mostrarFormularioEditar = true; // Muestra el formulario de editar
-    this.mostrarFormularioAgregar = false; // Oculta el formulario de agregar
+    this.visibleE = true;
     this.productoSeleccionado = producto;
     this.nuevoProducto = { ...producto }; // Copia los datos de la categoría seleccionada
   }
 
   // Cancela la edición y oculta el formulario
-  cancelarEdicion(): void {
-    this.mostrarFormularioEditar = false;
+  reiniciarDatos(): void {
     this.productoSeleccionado = {
       id: 0,
       nombre: '',
@@ -222,47 +160,26 @@ export class ProductoComponent {
       categoriaId: 0
     }; // Reinicia el formulario
     this.errorAgregarProducto = null; // Limpia el mensaje de error
+    this.visibleA = false;
+    this.visibleE= false;
   }
 
 
   editarProducto(producto: Producto): void {
     this.errorAgregarProducto = null;
 
-    // Validación de campos obligatorios
-    if (!producto.nombre || !producto.precio || !producto.stock || !producto.categoriaId) {
-      this.errorAgregarProducto = 'Campos requerodos';
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: this.errorAgregarProducto,
-      });
-      return;
-    }
-
-    this.productoService.editarProducto(producto.id, producto).subscribe(
+    this.productoService.editarProducto(producto.id, this.nuevoProducto).subscribe(
       () => {
-        // Actualiza la categoría en la lista
-        const index = this.productos.findIndex((c) => c.id === producto.id);
-        if (index !== -1) {
-          this.productos[index].nombre = this.productoSeleccionado.nombre;
-          this.productos[index].precio = this.productoSeleccionado.precio;
-          this.productos[index].categoriaId = this.productoSeleccionado.categoriaId;
-          if(this.productoSeleccionado.stock){
-          this.productos[index].stock = this.productoSeleccionado.stock;
-          }
-          if(this.productoSeleccionado.descripcion){
-            this.productos[index].descripcion = this.productoSeleccionado.descripcion;
-            }
-        }
+        this.visibleE =false;
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
-          detail: 'Categoria actualizada correctamente',
+          detail: 'Producto actualizado correctamente',
         });
-        this.cerrarModal('editproductoModal')
+        this.listar();
       },
       (error) => {
-        this.errorAgregarProducto = (error.error.message as string) || 'Error al agregar producto';
+        this.errorAgregarProducto = (error.error.message as string) || 'Error al editar producto';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',

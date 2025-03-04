@@ -16,18 +16,16 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter();
 
   roles = [
-    { name: 'Administrador', value: 'admin' },
-    { name: 'User', value: 'user' }
+    { label: 'Administrador', value: 'admin' },
+    { label: 'Editor', value: 'user' },
   ];
   botonDisponible: boolean = false;
+  visible: boolean = false;
   usuarios: User[] = [];
   termino: string = '';
   hayError: boolean = false;
-  nuevoUsuario: User = { id: 0, username: '', password: '', role: 'user', estado: 'inactivo' };
+  nuevoUsuario: User = { id: 0, username: '', password: '', nombre: '', apellido: '', role: 'user', estado: true };
   errorAgregarUsuario: string | null = null;
-  errorBuscar: string | null = null;
-  @ViewChild('editUserModal') editUserModal: ElementRef | undefined;
-  @ViewChild('usuarioForm') usuarioForm: NgForm | undefined;
 
   private debouncer: Subject<string> = new Subject<string>();
   private destroy$: Subject<void> = new Subject<void>();
@@ -45,7 +43,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       )
       .subscribe((valor) => {
         this.onDebounce.emit(valor);
-        this.sugerencias(valor);
+        this.resultados(valor);
       });
   }
 
@@ -54,44 +52,38 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+
+  getSeverity(estado: string) {
+    switch (estado) {
+      case 'activo':
+        return 'success';
+      case 'inactivo':
+        return 'danger';
+      default:
+        return 'info'; // O 'undefined' si prefieres manejar otros casos como no definidos
+    }
+  }
+
   listar() {
     this.usuarioService.getUsuarios().subscribe(
       (usuarios) => {
         this.usuarios = usuarios;
         this.hayError = false;
       },
-      () => {
-        this.usuarios = [];
-        this.hayError = true;
-      }
     );
   }
 
-  cerrarModal(modalId: string) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.add('hidden');
-    }
-  }
 
   buscar() {
     this.usuarioService.buscarUsuario(this.termino).subscribe(
       (usuarios) => {
         this.usuarios = usuarios;
       },
-      (error) => {
-        this.usuarios = [];
-        this.errorBuscar = (error.error.message as string) || 'Error al agregar usuario';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: this.errorBuscar,
-        });
-      }
     );
   }
 
   agregarUsuario() {
+    this.visible = true;
     this.usuarioService.agregarUsuario(this.nuevoUsuario).subscribe(
       (usuario) => {
         this.usuarios.push(usuario);
@@ -100,7 +92,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
           summary: 'Éxito',
           detail: 'Usuario agregado correctamente',
         });
-        this.cerrarModal('editUserModal');
+        this.visible = false;
       },
       (error) => {
         this.errorAgregarUsuario = (error.error.message as string) || 'Error al agregar usuario';
@@ -114,7 +106,8 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   }
 
   cambiarRol(usuario: User) {
-    const nuevoRol = usuario.role === 'admin' ? 'user' : 'admin';
+
+    const nuevoRol = usuario.role;
     this.usuarioService.cambiarRolUsuario(usuario.id, nuevoRol).subscribe(
       () => {
         const index = this.usuarios.findIndex((u) => u.id === usuario.id);
@@ -134,13 +127,15 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   }
 
   cambiarEstado(usuario: User) {
-    const nuevoEstado = usuario.estado === 'activo' ? 'inactivo' : 'activo';
+    const nuevoEstado = usuario.estado;
     this.usuarioService.cambiarEstadoUsuario(usuario.id, nuevoEstado).subscribe(
       () => {
         const index = this.usuarios.findIndex((u) => u.id === usuario.id);
         if (index !== -1) {
           this.usuarios[index].estado = nuevoEstado;
         }
+        this.visible = false;
+        this.nuevoUsuario = { id: 0, username: '', password: '', nombre: '', apellido: '', role: 'user', estado: true }; // Reinicia el formulario
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
@@ -158,21 +153,24 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     );
   }
 
+  // Cancela la edición y oculta el formulario
+  cancelarAgregar(): void {
+    this.visible = false;
+    this.nuevoUsuario = { id: 0, username: '', password: '', nombre: '', apellido: '', role: 'user', estado: true }; // Reinicia el formulario
+    this.errorAgregarUsuario = null; // Limpia el mensaje de error
+  }
 
   teclaPresionada() {
     this.debouncer.next(this.termino);
   }
 
-  sugerencias(termino: string) {
+  resultados(termino: string) {
     this.hayError = false;
 
     this.usuarioService.buscarUsuario(termino).subscribe(
       (usuarios) => {
         this.usuarios = usuarios;
       },
-      () => {
-        this.usuarios = [];
-      }
     );
   }
 }

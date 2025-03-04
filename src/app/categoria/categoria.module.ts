@@ -1,20 +1,27 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { CategoriaService } from './categoria.service';
+import { CategoriaService } from '././categoria.service';
 import { CategoriaComponent } from './components/categoria.component';
-import { MessageModule } from 'primeng/message';
 import { InputTextModule } from 'primeng/inputtext';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessagesModule } from 'primeng/messages';
-import { DropdownModule } from 'primeng/dropdown';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { SelectModule } from 'primeng/select';
 import { DialogModule } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TableModule } from 'primeng/table';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { InputIconModule } from 'primeng/inputicon';
+import { TagModule } from 'primeng/tag';
+import { SliderModule } from 'primeng/slider';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { RatingModule } from 'primeng/rating';
+import { RippleModule } from 'primeng/ripple';
+import { IconFieldModule } from 'primeng/iconfield';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TextareaModule } from 'primeng/textarea';
 
 
 @NgModule({
@@ -23,19 +30,29 @@ import { MessageService } from 'primeng/api';
   ],
   imports: [
     CommonModule,
-    HttpClientModule,
     FormsModule,
-    MessageModule,
+    InputNumberModule,
+    TableModule,
+    MultiSelectModule,
+    InputIconModule,
+    TagModule,
     InputTextModule,
-    ConfirmDialogModule,
-    ButtonModule,
+    SliderModule,
+    ProgressBarModule,
+    ToggleButtonModule,
     ToastModule,
-    MessagesModule,
-    DropdownModule,
-    BrowserAnimationsModule,
-    SelectButtonModule,
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    RatingModule,
+    RippleModule,
+    IconFieldModule,
+    SelectModule,
+    ToggleSwitchModule,
     DialogModule,
+    ConfirmDialogModule,
+    TextareaModule,
   ],
-  providers: [CategoriaService, MessageService],
+  providers: [CategoriaService],
 })
 export class CategoriaModule { }

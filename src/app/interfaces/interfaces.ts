@@ -3,12 +3,15 @@ export interface User {
   username: string;
   password: string;
   role: 'admin' | 'user';
-  estado: 'activo' | 'inactivo';
+  estado: boolean ;
+  nombre: string;
+  apellido: string;
 }
 
 export interface Categoria {
   id: number;
   nombre: string;
+  descripcion?: string
 }
 
 export interface Producto {

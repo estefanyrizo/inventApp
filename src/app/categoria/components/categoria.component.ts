@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Categoria } from '../../interfaces/interfaces';
 import { CategoriaService } from '../categoria.service';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { debounceTime, retry, Subject, takeUntil } from 'rxjs';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { NgForm } from '@angular/forms';
 
@@ -15,16 +15,14 @@ import { NgForm } from '@angular/forms';
 })
 export class CategoriaComponent {
   @Output() onDebounce: EventEmitter<string> = new EventEmitter(); // Emite el término de búsqueda con debounce
-
+  visibleE: boolean = false;
+  visibleA: boolean = false;
   categorias: Categoria[] = [];
   hayError: boolean = false;
   termino: string = '';
   errorAgregarCategoria: string | null = '';
-  errorBuscar: string | null = null;
-  nuevaCategoria: Categoria = { id: 0, nombre: '' };
-  mostrarFormularioEditar: boolean = false;
-  mostrarFormularioAgregar: boolean = false;
-  categoriaSeleccionada: Categoria = { id: 0, nombre: '' }
+  nuevaCategoria: Categoria = { id: 0, nombre: '', descripcion: '' };
+  categoriaSeleccionada: Categoria = { id: 0, nombre: '', descripcion: '' }
 
   private debouncer: Subject<string> = new Subject<string>(); // Subject para manejar el debounce
   private destroy$: Subject<void> = new Subject<void>(); // Subject para manejar la destrucción del componente
@@ -72,15 +70,6 @@ export class CategoriaComponent {
       (categorias) => {
         this.categorias = categorias;
       },
-      (error) => {
-        this.categorias = [];
-        this.errorBuscar = (error.error.message as string) || 'Error al agregar usuario';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: this.errorBuscar,
-        });
-      }
     );
   }
 
@@ -94,22 +83,17 @@ export class CategoriaComponent {
     // Reinicia el mensaje de error
     this.errorAgregarCategoria = null;
 
-    // Validación de campos obligatorios
-    if (!this.nuevaCategoria.nombre) {
-      this.errorAgregarCategoria = 'Todos los campos son obligatorios.';
-      return;
-    }
-
     // Llama al servicio para agregar el usuario
     this.categoriaService.agregarCategoria(this.nuevaCategoria).subscribe(
       (categoria) => {
-        this.categorias.push(categoria); // Agrega el nuevo usuario a la lista
+        this.visibleA = false;
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
           detail: 'Categoria agregada correctamente',
         });
-        this.cerrarModal('addCategoryModal');
+        this.listar();
+        this.reiniciarDatos();
       },
       (error) => {
         this.errorAgregarCategoria = (error.error.message as string) || 'Error al agregar categoria';
@@ -121,7 +105,6 @@ export class CategoriaComponent {
       }
     );
   }
-
 
 
   // Método para manejar las resultados
@@ -139,50 +122,51 @@ export class CategoriaComponent {
     );
   }
 
-  SeleccionarCategoria(categoria: any) {
-    this.categoriaSeleccionada = { ...categoria }; // Crea una copia para evitar la mutación directa
+  // Muestra el formulario de edición y llena los datos
+  mostrarFormularioEdicion(categoria: Categoria): void {
+    this.visibleE = true;
+    this.categoriaSeleccionada = categoria;
+    this.nuevaCategoria = { ...categoria }; // Copia los datos de la categoría seleccionada
   }
 
-  abrirModal(modalId: string) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.remove('hidden');
-    }
+  // Cancela la edición y oculta el formulario
+  reiniciarDatos(): void {
+    this.categoriaSeleccionada = {
+      id: 0,
+      nombre: '',
+      descripcion: '',
+    };
+    this.nuevaCategoria = {
+      id: 0,
+      nombre: '',
+      descripcion: '',
+    }; // Reinicia el formulario
+    this.errorAgregarCategoria = null; // Limpia el mensaje de error
+    this.visibleA = false;
+    this.visibleE = false;
   }
 
-  cerrarModal(modalId: string) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.add('hidden');
-    }
-  }
   // Envía los cambios al servidor
   editarCategoria(categoria: Categoria): void {
     this.errorAgregarCategoria = null;
 
-    // Validación de campos obligatorios
-    if (!this.categoriaSeleccionada.nombre) {
-      this.errorAgregarCategoria = 'Todos los campos son obligatorios.';
-      return;
-    }
-
-    this.categoriaService.editarCategoria(categoria.id, this.categoriaSeleccionada).subscribe(
+    this.categoriaService.editarCategoria(categoria.id, this.nuevaCategoria).subscribe(
       () => {
-        // Actualiza la categoría en la lista
-        const index = this.categorias.findIndex((c) => c.id === categoria.id);
-        if (index !== -1) {
-          this.categorias[index].nombre = this.nuevaCategoria.nombre;
-        }
+        this.visibleE = false;
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
-          detail: 'Categoria actualizada correctamente',
+          detail: 'Categoria correctamente',
         });
         this.listar();
-        this.cerrarModal('editCategoryModal');
       },
-      (err) => {
-        console.error('Error al actualizar', err);
+      (error) => {
+        this.errorAgregarCategoria = (error.error.message as string) || 'Error al editar categoria';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.errorAgregarCategoria,
+        });
       }
     );
 

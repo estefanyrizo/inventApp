@@ -29,7 +29,7 @@ export class UsuarioService {
   cambiarRolUsuario(id: number, nuevoRol: string): Observable<User> {
     return this.http.patch<User>(`${this.apiUrl}/users/${id}`, { role: nuevoRol });
   }
-  cambiarEstadoUsuario(id: number, nuevoEstado: string): Observable<User> {
+  cambiarEstadoUsuario(id: number, nuevoEstado: boolean): Observable<User> {
     return this.http.patch<User>(`${this.apiUrl}/users/${id}`, { estado: nuevoEstado });
   }
 }

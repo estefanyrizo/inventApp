@@ -8,6 +8,6 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [PrimeUI, require('flowbite/plugin')]
+  plugins: [PrimeUI]
   
 }

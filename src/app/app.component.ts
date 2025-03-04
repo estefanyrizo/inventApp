@@ -1,5 +1,6 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { FlowbiteService } from './flowbite.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   standalone: false,
@@ -7,13 +8,7 @@ import { FlowbiteService } from './flowbite.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements AfterViewInit {
-  buttons: string[] = ['Button 1', 'Button 2'];
+export class AppComponent {
 
-  constructor(private flowbiteService: FlowbiteService) {}
-
-  ngAfterViewInit(): void {
-    this.flowbiteService.loadFlowbite();
-  }
-
+  constructor(private messageService: MessageService) {}
 }

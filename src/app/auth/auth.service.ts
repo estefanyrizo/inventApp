@@ -93,8 +93,9 @@ export class AuthService {
   }
 
   isActive(): Observable<boolean> {
-    return of(this.getDecodedToken()?.estado?.toLowerCase() === 'activo' || false);
+    return of(this.getDecodedToken()?.estado ?? false);
   }
+
 
   getDecodedToken(): any {
     const token = this.getToken();

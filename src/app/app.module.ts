@@ -8,13 +8,17 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Tema from './tema';
 
+import { provideHttpClient, withFetch } from '@angular/common/http';
+
 
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { CategoriaModule } from './categoria/categoria.module';
 import { ProductoModule } from './producto/producto.module';
-import { FlowbiteService } from './flowbite.service';
 import { LoggedInLayoutModule } from './shared/logged-in-layout/logged-in-layout.module';
+import { MessagesModule } from 'primeng/messages';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -28,9 +32,11 @@ import { LoggedInLayoutModule } from './shared/logged-in-layout/logged-in-layout
     UsuarioModule,
     CategoriaModule,
     ProductoModule,
-    LoggedInLayoutModule
+    LoggedInLayoutModule,
+    ToastModule
   ],
   providers: [
+    provideHttpClient(withFetch()),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     providePrimeNG({
@@ -45,8 +51,12 @@ import { LoggedInLayoutModule } from './shared/logged-in-layout/logged-in-layout
         },
       },
     }),
-    FlowbiteService, // FlowbiteService ya está correctamente proporcionado
-  ],
+    MessageService
+    ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+function probvideHttpClient(witchFetch: any) {
+  throw new Error('Function not implemented.');
+}
+

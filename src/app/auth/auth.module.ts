@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 // Servicios
@@ -30,7 +29,6 @@ import { AdminGuard } from './admin.guard';
   imports: [
     FormsModule,
     CommonModule,
-    HttpClientModule,
     RouterModule,
     ButtonModule,
     InputTextModule, // Import InputTextModule
