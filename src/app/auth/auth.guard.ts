@@ -10,12 +10,22 @@ import { map, take, catchError, switchMap } from 'rxjs/operators';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
-    if (this.authService.isAuthenticated()) {
-      return true;
-    } else {
-      this.router.navigate(['/login']);
-      return false;
-    }
+  canActivate(): Observable<boolean> {
+    return this.authService.isAuthenticated().pipe(
+      take(1),
+      switchMap((isAuthenticated) => {
+        if (isAuthenticated) {
+          return of(true);
+        } else {
+          this.router.navigate(['/login']);
+          return of(false);
+        }
+      }),
+      catchError((error) => {
+        console.error('Error en AuthGuard:', error);
+        this.router.navigate(['/login']);
+        return of(false);
+      })
+    );
   }
 }

@@ -123,7 +123,7 @@ export class AuthService {
   }
 
   private startLocalStorageMonitoring(): void {
-    timer(0, 1000)
+    timer(0, 5000)
       .pipe(
         map(() => this.getToken()),
         distinctUntilChanged()
