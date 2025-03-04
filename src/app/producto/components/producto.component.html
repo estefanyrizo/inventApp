@@ -78,7 +78,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage">
             <tr>
-                <td colspan="4">No se encontraron Productos.</td>
+                <td colspan="4">No se encontraron productos.</td>
             </tr>
         </ng-template>
 
@@ -107,12 +107,12 @@
             </div>
             <div class="col-span-12 sm:col-span-6">
                 <label for="stock" class="block text-900 font-medium mb-2">Stock</label>
-                <p-inputnumber type="text" name="stock" id="stock" class="w-full mb-3" 
+                <p-inputnumber type="number" name="stock" id="stock" class="w-full mb-3" 
                     [(ngModel)]="nuevoProducto.stock" />
             </div>
             <div class="col-span-12 sm:col-span-12">
                 <label for="descripcion" class="block text-900 font-medium mb-2">Descripci&oacute;n</label>
-                <textarea rows="2" [fluid]="true" pTextarea name="descripcion" [(ngModel)]="nuevoProducto.descripcion" ></textarea>
+                <textarea rows="3" [fluid]="true"  pTextarea name="descripcion" [(ngModel)]="nuevoProducto.descripcion" ></textarea>
             </div>
         </div>
         <div class="flex justify-end gap-2">
@@ -123,7 +123,7 @@
 </p-dialog>
 
 <p-dialog header="Editar producto" [modal]="true" [(visible)]="visibleE" [style]="{ width: '50rem' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [closeOnEscape]="false">
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [closable]="false" >
     <form (ngSubmit)="editarProducto(productoSeleccionado)" #ProductoFormEditar="ngForm">
         <div class="grid grid-cols-12 gap-3">
             <div class="col-span-12 sm:col-span-6">
@@ -149,7 +149,7 @@
             </div>
             <div class="col-span-12 sm:col-span-12">
                 <label for="descripcion" class="block text-900 font-medium mb-2">Descripci&oacute;n</label>
-                <textarea rows="2" [fluid]="true" pTextarea name="descripcion" [(ngModel)]="nuevoProducto.descripcion" ></textarea>
+                <textarea rows="3" [fluid]="true" pTextarea name="descripcion" [(ngModel)]="nuevoProducto.descripcion" ></textarea>
             </div>
         </div>
         <div class="flex justify-end gap-2">

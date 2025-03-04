@@ -10,21 +10,19 @@ import { take, switchMap, catchError } from 'rxjs/operators';
 export class AdminGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): Observable<boolean> {
-    return this.authService.isAdmin().pipe(
-      take(1),
-      switchMap((isAdmin) => {
-        if (isAdmin) {
-          return of(true);
-        } else {
-          this.router.navigate(['/home']); // Redirige a /home si no es admin
-          return of(false);
-        }
-      }),
-      catchError(() => {
-        this.router.navigate(['/home']); // Redirige a /home si hay un error
-        return of(false);
-      })
-    );
+  canActivate(): boolean {
+    const isAdmin = this.authService.isAdmin();
+
+    if (isAdmin === null) {
+      this.router.navigate(['/home']);
+      return false;
+    }
+
+    if (isAdmin) {
+      return true;
+    } else {
+      this.router.navigate(['/home']);
+      return false;
+    }
   }
 }

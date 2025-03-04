@@ -30,6 +30,11 @@
                         Descripci&oacute;n
                     </div>
                 </th>
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">
+                        Editar
+                    </div>
+                </th>
             </tr>
         </ng-template>
 
@@ -56,7 +61,7 @@
     </p-table>
 </div>
 
-<p-dialog header="Agregar nueva categoria" [modal]="true" [(visible)]="visibleA" [style]="{ width: '25rem' }"
+<p-dialog header="Agregar nueva categoria" [modal]="true" [(visible)]="visibleA" [style]="{ width: '30rem' }"
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
     <form (ngSubmit)="agregarCategoria()" #categoriaFormAgregar="ngForm">
         <div class="grid grid-cols-12 gap-3">
@@ -67,7 +72,7 @@
             </div>
             <div class="col-span-12 sm:col-span-12">
                 <label for="descripcion" class="block text-900 font-medium mb-2">Descripci&oacute;n</label>
-                <textarea rows="2" [fluid]="true" pTextarea name="descripcion" [(ngModel)]="nuevaCategoria.descripcion" ></textarea>
+                <textarea rows="3"[fluid]="true" pTextarea name="descripcion" [(ngModel)]="nuevaCategoria.descripcion" ></textarea>
             </div>
         </div>
         <div class="flex justify-end gap-2">
@@ -77,8 +82,8 @@
     </form>
 </p-dialog>
 
-<p-dialog header="Editar categoria" [modal]="true" [(visible)]="visibleE" [style]="{ width: '25rem' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [closeOnEscape]="false">
+<p-dialog header="Editar categoria" [modal]="true" [(visible)]="visibleE" [style]="{ width: '30rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [closable]="false">
     <form (ngSubmit)="editarCategoria(categoriaSeleccionada)" #categoriaFormEditar="ngForm">
         <div class="grid grid-cols-12 gap-3">
             <div class="col-span-12 sm:col-span-12">
@@ -88,7 +93,7 @@
             </div>
             <div class="col-span-12 sm:col-span-12">
                 <label for="descripcion" class="block text-900 font-medium mb-2">Descripci&oacute;n</label>
-                <textarea rows="2" [fluid]="true" pTextarea name="descripcion" [(ngModel)]="nuevaCategoria.descripcion" ></textarea>
+                <textarea rows="3" [fluid]="true"  pTextarea name="descripcion" [(ngModel)]="nuevaCategoria.descripcion" ></textarea>
             </div>
         </div>
         <div class="flex justify-end gap-2">
