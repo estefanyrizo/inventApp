@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+// import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
   standalone: false,
 })
 export class LoginComponent {
@@ -13,7 +15,7 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.authService.logout();
@@ -37,7 +39,8 @@ export class LoginComponent {
           this.authService.isActive().subscribe({
             next: (isActive) => {
               if (!isActive) {
-                this.errorMessage = 'Tu cuenta está inactiva. Contacta al administrador.';
+                this.errorMessage =
+                  'Tu cuenta está inactiva. Contacta al administrador.';
                 this.isLoading = false;
                 return;
               }
@@ -50,7 +53,7 @@ export class LoginComponent {
             error: () => {
               this.errorMessage = 'Error al verificar el estado de la cuenta.';
               this.isLoading = false;
-            }
+            },
           });
         } else {
           this.errorMessage = 'Error en la respuesta del servidor.';
@@ -67,5 +70,32 @@ export class LoginComponent {
     });
   }
 
+  @ViewChild('loginCard', { static: false }) loginCard!: ElementRef;
+  @ViewChild('hoverOrb', { static: false }) hoverOrb!: ElementRef;
 
+  onMouseMove(event: MouseEvent) {
+    const card = this.loginCard.nativeElement;
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = (y - centerY) / 20;
+    const rotateY = (centerX - x) / 20;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(0)`;
+
+    if (this.hoverOrb) {
+      const orb = this.hoverOrb.nativeElement;
+      orb.style.top = `${y}px`;
+      orb.style.left = `${x}px`;
+    }
+  }
+
+  onMouseLeave() {
+    const card = this.loginCard.nativeElement;
+    card.style.transform =
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+  }
 }

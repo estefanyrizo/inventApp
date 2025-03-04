@@ -3,7 +3,7 @@
     <p-table [value]="usuarios">
         <ng-template pTemplate="caption">
             <div class="flex justify-between items-center flex-column sm:flex-row">
-                <p-button (click)="visible = !visible" class="p-button-outlined mb-2" label="Agregar nuevo usuario" />
+                <p-button (click)="visible = !visible" class="p-button-outlined mb-2" icon="pi pi-fw pi-user-plus" />
                 <form (ngSubmit)="buscar()" autocomplete="off">
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon>

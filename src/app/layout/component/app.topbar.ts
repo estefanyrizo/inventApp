@@ -43,8 +43,8 @@ import { AuthService } from '../../auth/auth.service';
                 <div class="relative">
                 <a (click)="logout()"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                role="menuitem">Cerrar sesión</a>
-                </div>
+                    role="menuitem"><i class="pi pi-sign-out" style="font-size: 1.3rem"></i></a>
+                    </div>
         </div>
         </div>
     </div>`

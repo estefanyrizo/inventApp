@@ -26,7 +26,7 @@ export class AppMenu {
             this.model = [
                 {
                     label: 'Inicio',
-                    items: [{ label: 'Productos', icon: 'pi pi-fw pi-home', routerLink: ["/admin/productos"] }]
+                    items: [{ label: 'Productos', icon: 'pi pi-fw pi-heart', routerLink: ["/admin/productos"] }]
                 }
             ];
             
@@ -34,8 +34,8 @@ export class AppMenu {
                 this.model.push({
                     label: 'Administrador',
                     items: [
-                        { label: 'Categorías', icon: 'pi pi-fw pi-id-card', routerLink: ['/admin/categorias'] },
-                        { label: 'Usuarios', icon: 'pi pi-fw pi-check-square', routerLink: ['/admin/usuarios'] },
+                        { label: 'Categorías', icon: 'pi pi-fw pi-th-large', routerLink: ['/admin/categorias'] },
+                        { label: 'Usuarios', icon: 'pi pi-fw pi-users', routerLink: ['/admin/usuarios'] },
                     ]
                 });
             }

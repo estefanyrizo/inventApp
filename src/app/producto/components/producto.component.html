@@ -4,7 +4,7 @@
         <ng-template pTemplate="caption">
             <div class="flex justify-between items-center flex-column sm:flex-row">
                 <p-button (click)="visibleA = !visibleA" class="p-button-outlined mb-2"
-                    label="Agregar nuevo Producto" />
+                    icon="pi pi-fw pi-plus" />
 
                 <form (ngSubmit)="buscar()" autocomplete="off">
                     <p-iconfield iconPosition="left" class="ml-auto">
@@ -72,7 +72,7 @@
                 </td>
                 <td >
                     <p-button (click)="mostrarFormularioEdicion(producto)" class="p-button-outlined mb-2"
-                        label="Editar" />
+                        icon="pi pi-fw pi-pen-to-square" />
                 </td>
             </tr>
         </ng-template>

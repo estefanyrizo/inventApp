@@ -1,0 +1,145 @@
+/* Fondo y Animaciones Globales */
+
+/* Degradado de fondo actualizado a tonos más vivos */
+
+  /* Animación de Flotación de la Tarjeta */
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0); }
+  }
+  
+  /* Animación de Sparkles */
+  .sparkle {
+    animation: sparkle 3s infinite;
+  }
+  
+  .animate-sparkle-delay {
+    animation: sparkle 3s infinite 1s;
+  }
+  
+  @keyframes sparkle {
+    0% { opacity: 0; transform: scale(0); }
+    50% { opacity: 0.7; transform: scale(1.5); background: rgba(139, 92, 246, 0.8); }
+    100% { opacity: 0; transform: scale(0); }
+  }
+  
+  /* Animación Fade-in para el Título */
+  .animate-fade-in {
+    animation: fadeIn 1.2s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Animación Slide-in para el subtítulo */
+  .animate-slide-in {
+    animation: slideIn 1s ease-out;
+  }
+  
+  @keyframes slideIn {
+    0% { opacity: 0; transform: translateX(-50px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  
+  /* Efecto Glowing y Bounce en Inputs */
+  .glow-input:focus {
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.9);
+    animation: bounce 0.3s ease;
+  }
+  
+  @keyframes bounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Efecto Glow y Pulso en Botones */
+  .button-glow:hover {
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.7);
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 2.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 rgba(139, 92, 246, 0.4); }
+    70% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.8); }
+    100% { box-shadow: 0 0 0 rgba(139, 92, 246, 0.4); }
+  }
+  
+  .animate-ripple {
+    animation: ripple 2s infinite;
+  }
+  
+  @keyframes ripple {
+    0% { transform: scale(0); opacity: 0.3; background: rgba(139, 92, 246, 0.4); }
+    100% { transform: scale(4); opacity: 0; background: rgba(139, 92, 246, 0); }
+  }
+  
+  /* Orb interactivo que sigue el cursor */
+  .hover-orb {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(203, 153, 255, 0.3) 80%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: pulseOrb 2s infinite;
+    z-index: 5;
+  }
+  
+  @keyframes pulseOrb {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+  
+  /* Estrellitas giratorias en el fondo */
+  .rotating-star {
+    position: absolute;
+    background: #8B5CF6;
+    clip-path: polygon(
+      50% 0%, 61% 35%, 98% 35%, 
+      68% 57%, 79% 91%, 50% 70%, 
+      21% 91%, 32% 57%, 2% 35%, 
+      39% 35%
+    );
+    animation: rotateStar linear infinite;
+    opacity: 0.8;
+  }
+  
+  @keyframes rotateStar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  @media (max-width: 768px) {
+      /* Oculta el orbe en dispositivos móviles */
+      .hover-orb {
+        display: none;
+      }
+    
+  
+    }
+    
+  
+  
+    
+  
+    /* @media (max-width: 768px) {
+      #login-card {
+          position: absolute;
+          top: %;
+          transform: translate(-50%, 0%);
+      }
+    } */
+    
