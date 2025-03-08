@@ -73,23 +73,29 @@ export class ProductoComponent {
       },
     );
   }
+  obtenerCategoriaNombre(categoriaId: number): string {
+    return this.categorias.find(cat => cat.id === categoriaId)?.nombre || 'Sin categoría';
+  }
 
-  // Método para obtener todos los productos
   listar() {
-    this.productoService.getproductos().subscribe(
-      (productos) => {
-        this.productos = productos;
-      },
-    );
+    this.productoService.getproductos().subscribe((productos) => {
+      productos = productos.map(producto => ({
+        categoria: this.obtenerCategoriaNombre(producto.categoriaId),
+        ...producto
+      }));
+      this.productos = productos
+    });
   }
 
   // Método para buscar usuarios por término
   buscar() {
-    this.productoService.buscarProducto(this.termino).subscribe(
-      (productos) => {
-        this.productos = productos;
-      },
-    );
+    this.productoService.buscarProducto(this.termino).subscribe((productos) => {
+      productos = productos.map(producto => ({
+        categoria: this.obtenerCategoriaNombre(producto.categoriaId),
+        ...producto
+      }));
+      this.productos = productos;
+    });
   }
   // Método que se ejecuta cada vez que se presiona una tecla
   teclaPresionada() {
@@ -100,11 +106,14 @@ export class ProductoComponent {
   resultados(termino: string) {
 
     // Aquí puedes hacer una solicitud HTTP para obtener resultados
-    this.productoService.buscarProducto(termino).subscribe(
-      (productos) => {
-        this.productos = productos; // Asigna los usuarios encontrados
-      },
-    );
+    this.productoService.buscarProducto(termino).subscribe((productos) => {
+      this.productos = productos; // Asigna los usuarios encontrados
+      productos = productos.map(producto => ({
+        categoria: this.obtenerCategoriaNombre(producto.categoriaId),
+        ...producto
+      }));
+      this.productos = productos;
+    });
   }
 
   // Método para agregar un nuevo usuario
@@ -161,7 +170,7 @@ export class ProductoComponent {
     }; // Reinicia el formulario
     this.errorAgregarProducto = null; // Limpia el mensaje de error
     this.visibleA = false;
-    this.visibleE= false;
+    this.visibleE = false;
   }
 
 
@@ -170,7 +179,7 @@ export class ProductoComponent {
 
     this.productoService.editarProducto(producto.id, this.nuevoProducto).subscribe(
       () => {
-        this.visibleE =false;
+        this.visibleE = false;
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
